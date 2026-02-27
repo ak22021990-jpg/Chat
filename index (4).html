@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ModWatch — Chat Moderation Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080f;
+  --surface:#0d1117;
+  --panel:#111827;
+  --border:#1f2937;
+  --border-bright:#374151;
+  --text:#f1f5f9;
+  --text-muted:#6b7280;
+  --text-dim:#374151;
+  --accent:#00e5ff;
+  --accent-glow:rgba(0,229,255,0.15);
+  --green:#10b981;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --purple:#a855f7;
+  --pink:#ec4899;
+  --blue:#3b82f6;
+  --orange:#f97316;
+  --font-display:'Syne',sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --font-body:'DM Sans',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body)}
+#root{height:100%}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent);color:#000;
+  font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+  padding:12px 28px;border-radius:6px;border:none;cursor:pointer;
+  transition:all .15s ease;position:relative;overflow:hidden;
+}
+.btn-primary:hover{background:#33ecff;transform:translateY(-1px);box-shadow:0 0 24px rgba(0,229,255,0.4)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;color:var(--text);
+  font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.06em;
+  padding:11px 24px;border-radius:6px;border:1px solid var(--border-bright);cursor:pointer;
+  transition:all .15s ease;
+}
+.btn-secondary:hover{background:var(--panel);border-color:var(--text-muted)}
+.btn-danger{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#7f1d1d;color:#fca5a5;
+  font-family:var(--font-display);font-weight:600;font-size:12px;letter-spacing:.06em;
+  padding:9px 18px;border-radius:6px;border:1px solid #991b1b;cursor:pointer;
+  transition:all .15s ease;
+}
+.btn-danger:hover{background:#991b1b}
+input[type=text],input[type=email]{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:var(--font-body);font-size:14px;
+  padding:12px 16px;border-radius:8px;width:100%;
+  transition:border-color .15s;outline:none;
+}
+input[type=text]:focus,input[type=email]:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
+input::placeholder{color:var(--text-muted)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes ping{0%{transform:scale(1);opacity:.8}100%{transform:scale(2);opacity:0}}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes greenFlash{0%{background:rgba(16,185,129,.25)}100%{background:transparent}}
+@keyframes redFlash{0%{background:rgba(239,68,68,.25)}100%{background:transparent}}
+@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+.scanline{
+  position:fixed;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(transparent,rgba(0,229,255,.06),transparent);
+  animation:scanline 8s linear infinite;pointer-events:none;z-index:9999;
+}
+.grid-bg{
+  position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,229,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0;
+}
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="grid-bg"></div>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useReducer, useRef, useCallback, useContext, createContext } = React;
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const BUCKETS = [
+  { id:'racial',    label:'Racial/Ethnic',   color:'#ef4444', bg:'rgba(239,68,68,.15)',    border:'rgba(239,68,68,.4)' },
+  { id:'sexual',    label:'Sexual Content',  color:'#f97316', bg:'rgba(249,115,22,.15)',   border:'rgba(249,115,22,.4)' },
+  { id:'hate',      label:'Hate Speech',     color:'#a855f7', bg:'rgba(168,85,247,.15)',   border:'rgba(168,85,247,.4)' },
+  { id:'harassment',label:'Harassment',      color:'#ec4899', bg:'rgba(236,72,153,.15)',   border:'rgba(236,72,153,.4)' },
+  { id:'emoji',     label:'Emoji Abuse',     color:'#3b82f6', bg:'rgba(59,130,246,.15)',   border:'rgba(59,130,246,.4)' },
+  { id:'other',     label:'Other/Ambiguous', color:'#6b7280', bg:'rgba(107,114,128,.15)',  border:'rgba(107,114,128,.4)' },
+];
+
+const USERS = {
+  low: [
+    {name:'GamerX99',color:'#3b82f6'},{name:'ShadowStrike',color:'#10b981'},
+    {name:'LunaWolf',color:'#a855f7'},{name:'NeonRider',color:'#f97316'},
+    {name:'CoolBreeze',color:'#ec4899'},{name:'ThunderBolt',color:'#f59e0b'},
+    {name:'StarDust',color:'#00e5ff'},{name:'IronFist',color:'#ef4444'},
+    {name:'PixelKing',color:'#84cc16'},{name:'DarkMatter',color:'#8b5cf6'},
+  ],
+  medium: [
+    {name:'xX_SlayR_Xx',color:'#ef4444'},{name:'NoScope420',color:'#3b82f6'},
+    {name:'QuickDraw',color:'#10b981'},{name:'T0xicVibes',color:'#a855f7'},
+    {name:'GrindMode',color:'#f97316'},{name:'ClutchGod',color:'#ec4899'},
+    {name:'l33tHax0r',color:'#f59e0b'},{name:'SweaTy_Palms',color:'#00e5ff'},
+    {name:'Lagmaster',color:'#84cc16'},{name:'AFK_Always',color:'#8b5cf6'},
+  ],
+  high: [
+    {name:'RAGE_QUIT_',color:'#ef4444'},{name:'EZ_CLAP',color:'#f97316'},
+    {name:'Boosted_AF',color:'#3b82f6'},{name:'TrollFace2',color:'#a855f7'},
+    {name:'HateBus99',color:'#ec4899'},{name:'N00bSlayer',color:'#f59e0b'},
+    {name:'CRYbaby_',color:'#10b981'},{name:'UNINSTALL',color:'#00e5ff'},
+    {name:'TrashPanda',color:'#84cc16'},{name:'TiltedAF',color:'#8b5cf6'},
+  ],
+};
+
+// Synthetic/redacted violation messages
+const DATASETS = {
+  low: {
+    violations: 10,
+    messages: [
+      // Panel 0
+      {id:'l1',panel:0,user:0,text:'gg everyone, great match!',t:12,buckets:[]},
+      {id:'l2',panel:0,user:1,text:'Anyone want to party up for the next round?',t:25,buckets:[]},
+      {id:'l3',panel:0,user:2,text:'That [RACIAL-SLUR-1] player on the other team was hacking smh',t:42,buckets:['racial']},
+      {id:'l4',panel:0,user:3,text:'Good game, close match!',t:55,buckets:[]},
+      {id:'l5',panel:0,user:4,text:'Hey can someone help me with this quest?',t:68,buckets:[]},
+      {id:'l6',panel:0,user:0,text:'You play like a little [SLUR-GENDERED] lmaooo',t:90,buckets:['harassment']},
+      {id:'l7',panel:0,user:5,text:'What time does the event start tonight?',t:110,buckets:[]},
+      {id:'l8',panel:0,user:1,text:'I\'ll send you pics if you know what I mean 😉😉😉',t:135,buckets:['sexual']},
+      // Panel 1
+      {id:'l9',panel:1,user:2,text:'Welcome to the server everyone!',t:10,buckets:[]},
+      {id:'l10',panel:1,user:3,text:'Who wants to grind ranked tonight?',t:30,buckets:[]},
+      {id:'l11',panel:1,user:6,text:'These [ETHNIC-SLUR-2] are always ruining games',t:48,buckets:['racial','hate']},
+      {id:'l12',panel:1,user:7,text:'Looking for a duo partner, DM me',t:65,buckets:[]},
+      {id:'l13',panel:1,user:8,text:'Nice shot bro',t:80,buckets:[]},
+      {id:'l14',panel:1,user:9,text:'Go kill yourself already 🔪💀',t:100,buckets:['harassment','emoji']},
+      {id:'l15',panel:1,user:0,text:'Anyone play on weekends?',t:120,buckets:[]},
+      {id:'l16',panel:1,user:1,text:'New season starts tomorrow fyi',t:145,buckets:[]},
+      // Panel 2
+      {id:'l17',panel:2,user:4,text:'This game is fire lately',t:15,buckets:[]},
+      {id:'l18',panel:2,user:5,text:'Can\'t believe how laggy the servers are',t:35,buckets:[]},
+      {id:'l19',panel:2,user:6,text:'Sending [explicit sexual content] to everyone in chat rn lmao',t:52,buckets:['sexual']},
+      {id:'l20',panel:2,user:7,text:'What\'s the best loadout right now?',t:72,buckets:[]},
+      {id:'l21',panel:2,user:8,text:'All [group-slur] should leave this server fr',t:88,buckets:['hate','racial']},
+      {id:'l22',panel:2,user:9,text:'I\'m trash at this game lol',t:105,buckets:[]},
+      {id:'l23',panel:2,user:0,text:'🍆🍑💦 add me ladies',t:128,buckets:['sexual','emoji']},
+      {id:'l24',panel:2,user:1,text:'gg wp everyone',t:150,buckets:[]},
+    ]
+  },
+  medium: {
+    violations: 15,
+    messages: [
+      {id:'m1',panel:0,user:0,text:'Okay who keeps griefing my base??',t:8,buckets:[]},
+      {id:'m2',panel:0,user:1,text:'[RACIAL-SLUR] this, [RACIAL-SLUR] that, just shut up bro',t:18,buckets:['racial']},
+      {id:'m3',panel:0,user:2,text:'Lmao that ending was crazy',t:30,buckets:[]},
+      {id:'m4',panel:0,user:3,text:'Your mother is a [sexual insult redacted]',t:41,buckets:['harassment','sexual']},
+      {id:'m5',panel:0,user:4,text:'anyone on NA servers?',t:55,buckets:[]},
+      {id:'m6',panel:0,user:5,text:'Death to all [ethnic group], no exceptions 🖕',t:65,buckets:['hate','racial','emoji']},
+      {id:'m7',panel:0,user:6,text:'lol rekt noob',t:78,buckets:[]},
+      {id:'m8',panel:0,user:7,text:'I know where you live, watch out',t:90,buckets:['harassment']},
+      {id:'m9',panel:0,user:8,text:'GG, honestly good game from both sides',t:105,buckets:[]},
+      {id:'m10',panel:0,user:9,text:'sharing [explicit link placeholder] in DMs if anyone wants',t:118,buckets:['sexual']},
+      {id:'m11',panel:1,user:0,text:'New patch dropped!',t:5,buckets:[]},
+      {id:'m12',panel:1,user:1,text:'this [slur for disabled people] can\'t even aim lmaooo',t:16,buckets:['harassment','hate']},
+      {id:'m13',panel:1,user:2,text:'What\'s everyone\'s rank?',t:28,buckets:[]},
+      {id:'m14',panel:1,user:3,text:'🍑🍑🍑 sliding into DMs tonight who wants it',t:40,buckets:['sexual','emoji']},
+      {id:'m15',panel:1,user:4,text:'Nice clutch on that last round',t:54,buckets:[]},
+      {id:'m16',panel:1,user:5,text:'All [nationality-slur] players are bots, uninstall',t:65,buckets:['racial','harassment']},
+      {id:'m17',panel:1,user:6,text:'Anyone watching the tourney?',t:78,buckets:[]},
+      {id:'m18',panel:1,user:7,text:'I\'ll [violent threat redacted] you in real life fr',t:90,buckets:['harassment','hate']},
+      {id:'m19',panel:1,user:8,text:'Patch fixed the hitbox, feels better now',t:105,buckets:[]},
+      {id:'m20',panel:1,user:9,text:'💀☠️🔫 come at me bro, do it',t:116,buckets:['harassment','emoji']},
+      {id:'m21',panel:2,user:0,text:'Looking for a chill squad to grind with',t:10,buckets:[]},
+      {id:'m22',panel:2,user:1,text:'[DEROGATORY-TERM] get out of gaming, it\'s not for you',t:22,buckets:['hate','harassment']},
+      {id:'m23',panel:2,user:2,text:'The new map is actually pretty good',t:35,buckets:[]},
+      {id:'m24',panel:2,user:3,text:'go touch grass [slur] 😂😂😂',t:47,buckets:['harassment']},
+      {id:'m25',panel:2,user:4,text:'Anyone else lag on this map?',t:60,buckets:[]},
+      {id:'m26',panel:2,user:5,text:'[explicit sexual description of streamer] lol she deserves it',t:72,buckets:['sexual','harassment']},
+      {id:'m27',panel:2,user:6,text:'gg close match',t:85,buckets:[]},
+      {id:'m28',panel:2,user:7,text:'Doxxing your info after the game, better quit',t:98,buckets:['harassment']},
+      {id:'m29',panel:2,user:8,text:'who\'s hyped for the new update?',t:112,buckets:[]},
+      {id:'m30',panel:2,user:9,text:'🤡🤡🤡 you play like my [insult] grandma',t:125,buckets:['harassment','emoji']},
+    ]
+  },
+  high: {
+    violations: 15,
+    messages: [
+      {id:'h1',panel:0,user:0,text:'[RACIAL-SLUR-COMPOUND] go back to your country fr',t:5,buckets:['racial','hate']},
+      {id:'h2',panel:0,user:1,text:'what a great game, loving season 4',t:10,buckets:[]},
+      {id:'h3',panel:0,user:2,text:'I\'m literally gonna find your IP and [violent threat]',t:18,buckets:['harassment','hate']},
+      {id:'h4',panel:0,user:3,text:'GG all',t:25,buckets:[]},
+      {id:'h5',panel:0,user:4,text:'🖕🖕 all [ethnic group] players 🖕🖕 get rekt',t:32,buckets:['racial','emoji','hate']},
+      {id:'h6',panel:0,user:5,text:'My setup is insane this season',t:40,buckets:[]},
+      {id:'h7',panel:0,user:6,text:'sending [explicit content] to all women in lobby rn',t:48,buckets:['sexual','harassment']},
+      {id:'h8',panel:0,user:7,text:'Gg guys, fun session',t:56,buckets:[]},
+      {id:'h9',panel:0,user:8,text:'[slur+slur compound] can\'t even play games right 💀',t:62,buckets:['racial','harassment','emoji']},
+      {id:'h10',panel:0,user:9,text:'who\'s queuing up after this?',t:70,buckets:[]},
+      {id:'h11',panel:1,user:0,text:'ez game ez life, you\'re all dogwater',t:7,buckets:[]},
+      {id:'h12',panel:1,user:1,text:'Women don\'t belong in [game], go make [sexual comment]',t:14,buckets:['harassment','sexual','hate']},
+      {id:'h13',panel:1,user:2,text:'Servers feel stable today finally',t:22,buckets:[]},
+      {id:'h14',panel:1,user:3,text:'[SLUR] [SLUR] [SLUR] all of you trash kids',t:30,buckets:['racial','harassment']},
+      {id:'h15',panel:1,user:4,text:'Close match actually, gg',t:38,buckets:[]},
+      {id:'h16',panel:1,user:5,text:'🤮🤮🤮 [ethnic slur] in my lobby AGAIN smh',t:45,buckets:['racial','emoji']},
+      {id:'h17',panel:1,user:6,text:'Anyone else enjoying the new season?',t:53,buckets:[]},
+      {id:'h18',panel:1,user:7,text:'I\'ll get your family\'s address posted online',t:60,buckets:['harassment','hate']},
+      {id:'h19',panel:1,user:8,text:'you absolute [degrading slur], you\'re pathetic',t:68,buckets:['harassment']},
+      {id:'h20',panel:1,user:9,text:'Ranked grind tonight anyone?',t:76,buckets:[]},
+      {id:'h21',panel:2,user:0,text:'[religious group] should be banned from servers, period',t:6,buckets:['hate','racial']},
+      {id:'h22',panel:2,user:1,text:'lmaooo that was actually funny tho',t:14,buckets:[]},
+      {id:'h23',panel:2,user:2,text:'🍆🍑💦 who wants to see, drop your discord',t:21,buckets:['sexual','emoji']},
+      {id:'h24',panel:2,user:3,text:'Good practice session everyone',t:30,buckets:[]},
+      {id:'h25',panel:2,user:4,text:'kys [slur], you\'re a waste of oxygen',t:38,buckets:['harassment','hate']},
+      {id:'h26',panel:2,user:5,text:'What loadout are you running?',t:46,buckets:[]},
+      {id:'h27',panel:2,user:6,text:'[compound hate speech targeting gender + race]',t:54,buckets:['hate','racial','harassment']},
+      {id:'h28',panel:2,user:7,text:'gg wp',t:62,buckets:[]},
+      {id:'h29',panel:2,user:8,text:'Go [violent act] yourself you [slur] loser 🔪',t:70,buckets:['harassment','hate','emoji']},
+      {id:'h30',panel:2,user:9,text:'Anyone else excited for the collab event?',t:78,buckets:[]},
+    ]
+  }
+};
+
+// ─── SCORING ENGINE ───────────────────────────────────────────────────────────
+const SCORE_CORRECT_FLAG = 10;
+const SCORE_CORRECT_BUCKET = 10;
+const SCORE_WRONG_BUCKET = -10;
+const SCORE_FALSE_POSITIVE = -5;
+const SCORE_MISSED = -5;
+const SCORE_PERFECT_BONUS = 25;
+const FLAG_COOLDOWN = 500;
+
+function scoringReducer(state, action) {
+  switch(action.type) {
+    case 'FLAG_MESSAGE': {
+      const { messageId, selectedBuckets, message, timestamp } = action;
+      if(state.flagged[messageId]) return state; // already flagged
+      const groundTruth = message.buckets;
+      const isViolation = groundTruth.length > 0;
+      let delta = 0;
+      let result = '';
+      if(isViolation) {
+        delta += SCORE_CORRECT_FLAG;
+        let correctCount = 0;
+        selectedBuckets.forEach(b => {
+          if(groundTruth.includes(b)) { delta += SCORE_CORRECT_BUCKET; correctCount++; }
+          else delta += SCORE_WRONG_BUCKET;
+        });
+        result = 'correct';
+      } else {
+        delta += SCORE_FALSE_POSITIVE;
+        selectedBuckets.forEach(() => { delta += SCORE_WRONG_BUCKET; });
+        result = 'incorrect';
+      }
+      const responseTime = timestamp - (message.t * 1000);
+      return {
+        ...state,
+        score: state.score + delta,
+        flagged: { ...state.flagged, [messageId]: { selectedBuckets, result, delta, groundTruth, responseTime } },
+        events: [...state.events, { type:'message_flagged', messageId, selectedBuckets, groundTruth, delta, result, timestamp }],
+        lastDelta: { value: delta, id: messageId, ts: Date.now() },
+        correctFlags: result === 'correct' ? state.correctFlags + 1 : state.correctFlags,
+        incorrectFlags: result === 'incorrect' ? state.incorrectFlags + 1 : state.incorrectFlags,
+      };
+    }
+    case 'TICK': {
+      return { ...state, timeLeft: Math.max(0, state.timeLeft - 1) };
+    }
+    case 'RESET': {
+      return { ...initScoringState() };
+    }
+    default: return state;
+  }
+}
+function initScoringState() {
+  return { score:0, flagged:{}, events:[], timeLeft:300, lastDelta:null, correctFlags:0, incorrectFlags:0 };
+}
+
+// ─── CONTEXT ──────────────────────────────────────────────────────────────────
+const GameContext = createContext(null);
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function getAccuracy(correct, total) {
+  if(!total) return 0;
+  return Math.round((correct / total) * 100);
+}
+
+// ─── COMPONENTS ───────────────────────────────────────────────────────────────
+
+// Start Screen
+function StartScreen({ onStart }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [nameErr, setNameErr] = useState('');
+  const [emailErr, setEmailErr] = useState('');
+
+  const validate = () => {
+    let valid = true;
+    if(!name.trim()) { setNameErr('Name is required'); valid = false; } else setNameErr('');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailErr('Valid email required'); valid = false; } else setEmailErr('');
+    return valid;
+  };
+
+  const handleStart = () => {
+    if(validate()) onStart({ name: name.trim(), email: email.trim() });
+  };
+
+  return (
+    <div style={{
+      minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',
+      padding:'24px',position:'relative',zIndex:1
+    }}>
+      <div style={{maxWidth:520,width:'100%',animation:'fadeIn .6s ease'}}>
+        {/* Logo */}
+        <div style={{marginBottom:40,textAlign:'center'}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:12,marginBottom:16}}>
+            <div style={{
+              width:44,height:44,background:'var(--accent)',borderRadius:8,
+              display:'flex',alignItems:'center',justifyContent:'center',
+              fontSize:22,fontWeight:900,color:'#000',fontFamily:'var(--font-display)'
+            }}>M</div>
+            <span style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:26,letterSpacing:'.05em',color:'var(--text)'}}>MODWATCH</span>
+          </div>
+          <div style={{
+            display:'inline-block',
+            background:'rgba(0,229,255,.1)',border:'1px solid rgba(0,229,255,.3)',
+            color:'var(--accent)',fontFamily:'var(--font-mono)',fontSize:11,
+            padding:'4px 12px',borderRadius:4,letterSpacing:'.15em'
+          }}>CONTENT MODERATION TRAINING SYSTEM v2.4</div>
+        </div>
+
+        {/* Main card */}
+        <div style={{
+          background:'var(--surface)',border:'1px solid var(--border)',
+          borderRadius:16,overflow:'hidden'
+        }}>
+          {/* Top bar */}
+          <div style={{
+            padding:'16px 24px',borderBottom:'1px solid var(--border)',
+            display:'flex',alignItems:'center',gap:8,
+            background:'rgba(0,229,255,.03)'
+          }}>
+            <div style={{width:10,height:10,borderRadius:'50%',background:'#ef4444'}}/>
+            <div style={{width:10,height:10,borderRadius:'50%',background:'#f59e0b'}}/>
+            <div style={{width:10,height:10,borderRadius:'50%',background:'#10b981'}}/>
+            <span style={{marginLeft:8,fontFamily:'var(--font-mono)',fontSize:12,color:'var(--text-muted)'}}>session_init.exe</span>
+          </div>
+
+          <div style={{padding:32}}>
+            <h1 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:28,lineHeight:1.1,marginBottom:8}}>
+              Train Your<br/><span style={{color:'var(--accent)'}}>Moderation Eye</span>
+            </h1>
+            <p style={{color:'var(--text-muted)',fontSize:14,lineHeight:1.6,marginBottom:28}}>
+              Monitor 3 live chat rooms simultaneously. Flag violations, classify them into buckets, and outperform your peers on the leaderboard.
+            </p>
+
+            {/* Rules */}
+            <div style={{
+              background:'var(--panel)',border:'1px solid var(--border)',
+              borderRadius:10,padding:20,marginBottom:28
+            }}>
+              <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:12,letterSpacing:'.1em',color:'var(--text-muted)',marginBottom:14,textTransform:'uppercase'}}>Scoring Rules</div>
+              {[
+                ['✓ Correct flag','+10 pts'],
+                ['✓ Correct bucket','+10 pts each'],
+                ['✗ False positive','-5 pts'],
+                ['✗ Wrong bucket','-10 pts each'],
+                ['◎ Missed violation','-5 pts'],
+                ['★ Perfect session','+25 bonus'],
+              ].map(([label,val]) => (
+                <div key={label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+                  <span style={{fontSize:13,color: label.startsWith('✓') ? '#10b981' : label.startsWith('✗') ? '#ef4444' : label.startsWith('◎') ? '#f59e0b' : '#a855f7'}}>{label}</span>
+                  <span style={{fontFamily:'var(--font-mono)',fontSize:13,color:'var(--text)',fontWeight:700}}>{val}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Form */}
+            <div style={{display:'flex',flexDirection:'column',gap:16,marginBottom:24}}>
+              <div>
+                <label style={{display:'block',fontSize:12,fontFamily:'var(--font-mono)',color:'var(--text-muted)',marginBottom:8,textTransform:'uppercase',letterSpacing:'.08em'}}>Player Name</label>
+                <input type="text" placeholder="Enter your name" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleStart()}/>
+                {nameErr && <div style={{color:'#ef4444',fontSize:12,marginTop:6}}>{nameErr}</div>}
+              </div>
+              <div>
+                <label style={{display:'block',fontSize:12,fontFamily:'var(--font-mono)',color:'var(--text-muted)',marginBottom:8,textTransform:'uppercase',letterSpacing:'.08em'}}>Email Address</label>
+                <input type="email" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleStart()}/>
+                {emailErr && <div style={{color:'#ef4444',fontSize:12,marginTop:6}}>{emailErr}</div>}
+              </div>
+            </div>
+
+            <button className="btn-primary" onClick={handleStart} style={{width:'100%',justifyContent:'center',fontSize:14,padding:'14px'}}>
+              Enter Training →
+            </button>
+          </div>
+        </div>
+
+        <p style={{textAlign:'center',marginTop:20,fontSize:12,color:'var(--text-dim)',fontFamily:'var(--font-mono)'}}>
+          Maximum 2 attempts per email · Results logged to leaderboard
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Level Selection
+function LevelSelect({ player, onSelectLevel }) {
+  const levels = [
+    { id:'low', label:'BEGINNER', tag:'LOW', color:'#10b981', violations:10, desc:'10 violations · Obvious patterns · Slower pacing', detail:'Clear, direct violations. Good for first-time moderators.' },
+    { id:'medium', label:'INTERMEDIATE', tag:'MEDIUM', color:'#f59e0b', violations:15, desc:'15 violations · Ambiguous context · Mixed categories', detail:'Increased complexity with multi-label and contextual cases.' },
+    { id:'high', label:'ADVANCED', tag:'HIGH', color:'#ef4444', violations:15, desc:'15 violations · Dense noise · Compound violations', detail:'High-density violations with subtle and overlapping cases.' },
+  ];
+
+  return (
+    <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',position:'relative',zIndex:1}}>
+      {/* Top bar */}
+      <div style={{
+        padding:'16px 32px',borderBottom:'1px solid var(--border)',
+        display:'flex',justifyContent:'space-between',alignItems:'center',
+        background:'var(--surface)'
+      }}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <div style={{width:32,height:32,background:'var(--accent)',borderRadius:6,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,fontWeight:900,color:'#000',fontFamily:'var(--font-display)'}}>M</div>
+          <span style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:18,letterSpacing:'.04em'}}>MODWATCH</span>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:13,color:'var(--text-muted)'}}>
+            <span style={{color:'var(--accent)'}}>▶</span> {player.name}
+          </span>
+        </div>
+      </div>
+
+      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 24px'}}>
+        <div style={{marginBottom:40,textAlign:'center'}}>
+          <div style={{fontFamily:'var(--font-mono)',fontSize:12,letterSpacing:'.2em',color:'var(--text-muted)',marginBottom:12,textTransform:'uppercase'}}>Select Difficulty</div>
+          <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:36}}>Choose Your Level</h2>
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:20,maxWidth:960,width:'100%'}}>
+          {levels.map(level => (
+            <div
+              key={level.id}
+              onClick={() => onSelectLevel(level.id)}
+              style={{
+                background:'var(--surface)',border:`1px solid var(--border)`,
+                borderRadius:14,padding:28,cursor:'pointer',
+                transition:'all .2s ease',position:'relative',overflow:'hidden',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = level.color;
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = `0 12px 32px ${level.color}22`;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--border)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <div style={{
+                position:'absolute',top:0,right:0,
+                background:level.color,color:'#000',
+                fontFamily:'var(--font-mono)',fontSize:10,fontWeight:700,letterSpacing:'.1em',
+                padding:'4px 12px',borderRadius:'0 14px 0 8px'
+              }}>{level.tag}</div>
+
+              <div style={{marginBottom:20}}>
+                <div style={{
+                  width:48,height:48,borderRadius:10,
+                  background:`${level.color}20`,border:`1px solid ${level.color}40`,
+                  display:'flex',alignItems:'center',justifyContent:'center',
+                  marginBottom:16,fontSize:24
+                }}>
+                  {level.id === 'low' ? '🟢' : level.id === 'medium' ? '🟡' : '🔴'}
+                </div>
+                <div style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:20,marginBottom:6}}>{level.label}</div>
+                <div style={{fontSize:13,color:'var(--text-muted)',lineHeight:1.5}}>{level.desc}</div>
+              </div>
+
+              <div style={{
+                background:'var(--panel)',borderRadius:8,padding:12,marginBottom:20,
+                fontSize:13,color:'var(--text-muted)',lineHeight:1.5
+              }}>{level.detail}</div>
+
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+                <div style={{textAlign:'center'}}>
+                  <div style={{fontFamily:'var(--font-mono)',fontSize:20,fontWeight:700,color:level.color}}>{level.violations}</div>
+                  <div style={{fontSize:11,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.06em'}}>Violations</div>
+                </div>
+                <div style={{textAlign:'center'}}>
+                  <div style={{fontFamily:'var(--font-mono)',fontSize:20,fontWeight:700,color:'var(--text)'}}>5:00</div>
+                  <div style={{fontSize:11,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.06em'}}>Time Limit</div>
+                </div>
+                <div style={{textAlign:'center'}}>
+                  <div style={{fontFamily:'var(--font-mono)',fontSize:20,fontWeight:700,color:'var(--text)'}}>3</div>
+                  <div style={{fontSize:11,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.06em'}}>Chat Rooms</div>
+                </div>
+              </div>
+
+              <button className="btn-primary" style={{width:'100%',justifyContent:'center',background:level.color,color: level.id==='low'?'#000':'#fff'}}>
+                Start {level.label} →
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Floating Bucket Panel
+function BucketPanel({ message, position, onConfirm, onClose }) {
+  const [selected, setSelected] = useState([]);
+
+  const toggle = (id) => setSelected(prev => prev.includes(id) ? prev.filter(x=>x!==id) : [...prev, id]);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if(!e.target.closest('.bucket-panel')) onClose();
+    };
+    setTimeout(() => document.addEventListener('click', handleClick), 100);
+    return () => document.removeEventListener('click', handleClick);
+  }, [onClose]);
+
+  return (
+    <div className="bucket-panel" style={{
+      position:'fixed',
+      top: Math.min(position.y, window.innerHeight - 340),
+      left: Math.min(position.x, window.innerWidth - 280),
+      width:270,
+      background:'var(--surface)',border:'1px solid var(--border-bright)',
+      borderRadius:12,boxShadow:'0 20px 60px rgba(0,0,0,.6)',
+      zIndex:1000,animation:'fadeIn .15s ease',overflow:'hidden'
+    }}>
+      <div style={{padding:'14px 16px',borderBottom:'1px solid var(--border)',background:'rgba(0,229,255,.05)'}}>
+        <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:13,marginBottom:4}}>Classify Violation</div>
+        <div style={{fontSize:12,color:'var(--text-muted)',fontFamily:'var(--font-mono)',lineHeight:1.4,wordBreak:'break-word'}}>
+          "{message.text.slice(0,60)}{message.text.length > 60 ? '…' : ''}"
+        </div>
+      </div>
+      <div style={{padding:12,display:'flex',flexDirection:'column',gap:6}}>
+        {BUCKETS.map(b => {
+          const isSelected = selected.includes(b.id);
+          return (
+            <div
+              key={b.id}
+              onClick={() => toggle(b.id)}
+              style={{
+                display:'flex',alignItems:'center',gap:10,padding:'9px 12px',
+                borderRadius:8,cursor:'pointer',
+                background: isSelected ? b.bg : 'transparent',
+                border: `1px solid ${isSelected ? b.border : 'var(--border)'}`,
+                transition:'all .12s ease'
+              }}
+            >
+              <div style={{
+                width:14,height:14,borderRadius:3,
+                background: isSelected ? b.color : 'transparent',
+                border: `1.5px solid ${isSelected ? b.color : 'var(--border-bright)'}`,
+                display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0
+              }}>
+                {isSelected && <span style={{fontSize:9,color:'#fff',fontWeight:900}}>✓</span>}
+              </div>
+              <span style={{fontSize:13,color: isSelected ? b.color : 'var(--text)',fontWeight: isSelected ? 600 : 400}}>{b.label}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{padding:'0 12px 12px',display:'flex',gap:8}}>
+        <button className="btn-secondary" onClick={onClose} style={{flex:1,justifyContent:'center',padding:'9px',fontSize:12}}>Cancel</button>
+        <button
+          className="btn-primary"
+          onClick={() => { if(selected.length) onConfirm(selected); }}
+          disabled={!selected.length}
+          style={{flex:1,justifyContent:'center',padding:'9px',fontSize:12}}
+        >Confirm</button>
+      </div>
+    </div>
+  );
+}
+
+// Message Item
+function MessageItem({ msg, users, flaggedInfo, onFlag, isLocked }) {
+  const [panelPos, setPanelPos] = useState(null);
+  const user = users[msg.user % users.length];
+
+  const handleClick = (e) => {
+    if(flaggedInfo || isLocked) return;
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPanelPos({ x: rect.left + 20, y: rect.bottom + 8 });
+  };
+
+  const handleConfirm = (buckets) => {
+    onFlag(msg, buckets);
+    setPanelPos(null);
+  };
+
+  let borderStyle = {};
+  let animation = '';
+  if(flaggedInfo) {
+    if(flaggedInfo.result === 'correct') {
+      borderStyle = { borderLeft: '3px solid #10b981', animation: 'greenFlash .4s ease' };
+    } else {
+      borderStyle = { borderLeft: '3px solid #ef4444', animation: 'redFlash .4s ease shake .3s ease' };
+    }
+  }
+
+  return (
+    <>
+      <div
+        onClick={handleClick}
+        style={{
+          padding:'10px 14px',borderRadius:8,
+          background: flaggedInfo ? (flaggedInfo.result === 'correct' ? 'rgba(16,185,129,.06)' : 'rgba(239,68,68,.06)') : 'transparent',
+          cursor: flaggedInfo || isLocked ? 'default' : 'pointer',
+          transition:'background .15s',
+          position:'relative',
+          ...borderStyle,
+        }}
+        onMouseEnter={e => { if(!flaggedInfo && !isLocked) e.currentTarget.style.background = 'rgba(255,255,255,.04)'; }}
+        onMouseLeave={e => { if(!flaggedInfo && !isLocked) e.currentTarget.style.background = 'transparent'; }}
+      >
+        <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+          <div style={{
+            width:28,height:28,borderRadius:'50%',flexShrink:0,
+            background:`${user.color}22`,border:`1.5px solid ${user.color}66`,
+            display:'flex',alignItems:'center',justifyContent:'center',
+            fontSize:10,fontWeight:700,color:user.color,fontFamily:'var(--font-mono)'
+          }}>{user.name[0]}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+              <span style={{fontSize:12,fontWeight:700,color:user.color,fontFamily:'var(--font-display)'}}>{user.name}</span>
+              {flaggedInfo && (
+                <span style={{
+                  fontSize:10,padding:'2px 6px',borderRadius:4,fontFamily:'var(--font-mono)',
+                  background: flaggedInfo.result === 'correct' ? 'rgba(16,185,129,.2)' : 'rgba(239,68,68,.2)',
+                  color: flaggedInfo.result === 'correct' ? '#10b981' : '#ef4444',
+                }}>
+                  {flaggedInfo.result === 'correct' ? '✓ FLAGGED' : '✗ FALSE POS'}
+                </span>
+              )}
+            </div>
+            <div style={{fontSize:13,color:'var(--text)',lineHeight:1.5,wordBreak:'break-word'}}>{msg.text}</div>
+            {flaggedInfo && (
+              <div style={{marginTop:6,display:'flex',flexWrap:'wrap',gap:4}}>
+                {flaggedInfo.selectedBuckets.map(bid => {
+                  const b = BUCKETS.find(x=>x.id===bid);
+                  const isCorrect = flaggedInfo.groundTruth.includes(bid);
+                  return b ? (
+                    <span key={bid} style={{
+                      fontSize:10,padding:'2px 7px',borderRadius:20,fontFamily:'var(--font-mono)',
+                      background: isCorrect ? `${b.color}22` : 'rgba(239,68,68,.15)',
+                      color: isCorrect ? b.color : '#ef4444',
+                      border: `1px solid ${isCorrect ? b.color+'44' : '#ef444444'}`
+                    }}>{b.label}</span>
+                  ) : null;
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      {panelPos && (
+        <BucketPanel
+          message={msg}
+          position={panelPos}
+          onConfirm={handleConfirm}
+          onClose={() => setPanelPos(null)}
+        />
+      )}
+    </>
+  );
+}
+
+// Chat Panel
+function ChatPanel({ title, messages, users, flaggedMap, onFlag, isLocked, panelIdx }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if(ref.current) ref.current.scrollTop = ref.current.scrollHeight;
+  }, [messages.length]);
+
+  return (
+    <div style={{
+      background:'var(--surface)',border:'1px solid var(--border)',
+      borderRadius:12,display:'flex',flexDirection:'column',overflow:'hidden',height:'100%'
+    }}>
+      <div style={{
+        padding:'12px 16px',borderBottom:'1px solid var(--border)',
+        display:'flex',alignItems:'center',gap:10,
+        background:'rgba(0,229,255,.03)'
+      }}>
+        <div style={{width:8,height:8,borderRadius:'50%',background:'#10b981',boxShadow:'0 0 6px #10b981'}}/>
+        <span style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:13,flex:1}}>{title}</span>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:11,color:'var(--text-muted)'}}>
+          {messages.length} msgs
+        </span>
+      </div>
+      <div ref={ref} style={{flex:1,overflowY:'auto',padding:'8px 4px'}}>
+        {messages.length === 0 && (
+          <div style={{padding:24,textAlign:'center',color:'var(--text-muted)',fontSize:13}}>
+            Waiting for messages...
+          </div>
+        )}
+        {messages.map(msg => (
+          <MessageItem
+            key={msg.id}
+            msg={msg}
+            users={users}
+            flaggedInfo={flaggedMap[msg.id]}
+            onFlag={onFlag}
+            isLocked={isLocked}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Score Float
+function ScoreFloat({ lastDelta }) {
+  const [visible, setVisible] = useState(false);
+  const [val, setVal] = useState(0);
+  const timerRef = useRef();
+
+  useEffect(() => {
+    if(!lastDelta) return;
+    setVal(lastDelta.value);
+    setVisible(true);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setVisible(false), 1000);
+  }, [lastDelta?.ts]);
+
+  if(!visible) return null;
+  return (
+    <div style={{
+      position:'fixed',top:80,right:40,zIndex:500,
+      fontFamily:'var(--font-display)',fontWeight:900,fontSize:28,
+      color: val >= 0 ? '#10b981' : '#ef4444',
+      textShadow: val >= 0 ? '0 0 20px #10b981' : '0 0 20px #ef4444',
+      animation:'floatUp 1s ease forwards',pointerEvents:'none'
+    }}>
+      {val >= 0 ? '+' : ''}{val}
+    </div>
+  );
+}
+
+// Timer
+function TimerDisplay({ timeLeft }) {
+  const isUrgent = timeLeft <= 30;
+  const pct = timeLeft / 300;
+
+  return (
+    <div style={{
+      display:'flex',alignItems:'center',gap:10,
+      background:'var(--panel)',border:`1px solid ${isUrgent ? '#ef4444' : 'var(--border)'}`,
+      borderRadius:10,padding:'10px 18px',
+      boxShadow: isUrgent ? '0 0 16px rgba(239,68,68,.3)' : 'none',
+      animation: isUrgent ? 'pulse 1s ease-in-out infinite' : 'none',
+    }}>
+      <div style={{fontSize:16}}>{isUrgent ? '⚠️' : '⏱️'}</div>
+      <div style={{
+        fontFamily:'var(--font-mono)',fontWeight:700,fontSize:22,
+        color: isUrgent ? '#ef4444' : 'var(--text)'
+      }}>{formatTime(timeLeft)}</div>
+    </div>
+  );
+}
+
+// Early Completion Modal
+function EarlyCompletionModal({ onEnd, onContinue }) {
+  return (
+    <div style={{
+      position:'fixed',inset:0,background:'rgba(0,0,0,.7)',
+      display:'flex',alignItems:'center',justifyContent:'center',zIndex:2000,
+      animation:'fadeIn .2s ease'
+    }}>
+      <div style={{
+        background:'var(--surface)',border:'1px solid var(--accent)',
+        borderRadius:16,padding:40,maxWidth:400,width:'90%',
+        boxShadow:'0 0 60px var(--accent-glow)',textAlign:'center'
+      }}>
+        <div style={{fontSize:48,marginBottom:16}}>🎯</div>
+        <h3 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:22,marginBottom:12,color:'var(--accent)'}}>
+          All Violations Found!
+        </h3>
+        <p style={{color:'var(--text-muted)',fontSize:14,lineHeight:1.6,marginBottom:28}}>
+          You've identified all violations before time ran out. End now to claim your bonus, or continue reviewing.
+        </p>
+        <div style={{display:'flex',gap:12,justifyContent:'center'}}>
+          <button className="btn-secondary" onClick={onContinue} style={{flex:1}}>Continue</button>
+          <button className="btn-primary" onClick={onEnd} style={{flex:1}}>End + Claim Bonus</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Game Session
+function GameSession({ level, player, dataset, onEnd }) {
+  const [state, dispatch] = useReducer(scoringReducer, null, initScoringState);
+  const [visibleMessages, setVisibleMessages] = useState({ 0:[], 1:[], 2:[] });
+  const [isLocked, setIsLocked] = useState(false);
+  const [showEarlyModal, setShowEarlyModal] = useState(false);
+  const [sessionStart] = useState(Date.now());
+  const timerRef = useRef();
+  const lastFlagTime = useRef(0);
+
+  const users = USERS[level];
+  const totalViolations = dataset.violations;
+  const allMessages = dataset.messages;
+
+  // Message reveal engine
+  useEffect(() => {
+    const intervals = [];
+    allMessages.forEach(msg => {
+      const delay = msg.t * 1000;
+      const t = setTimeout(() => {
+        if(!isLocked) {
+          setVisibleMessages(prev => ({
+            ...prev,
+            [msg.panel]: [...(prev[msg.panel] || []), msg]
+          }));
+        }
+      }, delay);
+      intervals.push(t);
+    });
+    return () => intervals.forEach(clearTimeout);
+  }, []);
+
+  // Timer
+  useEffect(() => {
+    timerRef.current = setInterval(() => dispatch({ type:'TICK' }), 1000);
+    return () => clearInterval(timerRef.current);
+  }, []);
+
+  // Check timer end
+  useEffect(() => {
+    if(state.timeLeft <= 0 && !isLocked) {
+      setIsLocked(true);
+      clearInterval(timerRef.current);
+      setTimeout(() => endSession(false), 800);
+    }
+  }, [state.timeLeft]);
+
+  // Check early completion
+  useEffect(() => {
+    const violationMessages = allMessages.filter(m => m.buckets.length > 0);
+    const allFlagged = violationMessages.every(m => state.flagged[m.id] && state.flagged[m.id].result === 'correct');
+    if(allFlagged && violationMessages.length > 0 && !isLocked) {
+      clearInterval(timerRef.current);
+      setShowEarlyModal(true);
+    }
+  }, [state.flagged]);
+
+  const handleFlag = useCallback((msg, buckets) => {
+    const now = Date.now();
+    if(now - lastFlagTime.current < FLAG_COOLDOWN) return;
+    lastFlagTime.current = now;
+    dispatch({ type:'FLAG_MESSAGE', messageId:msg.id, selectedBuckets:buckets, message:msg, timestamp:now });
+  }, []);
+
+  const endSession = (earlyCompletion = false) => {
+    setIsLocked(true);
+    setShowEarlyModal(false);
+    clearInterval(timerRef.current);
+    // Calculate missed violations
+    const violationMessages = allMessages.filter(m => m.buckets.length > 0);
+    const missed = violationMessages.filter(m => !state.flagged[m.id]);
+    const missedPenalty = missed.length * SCORE_MISSED;
+    const perfectBonus = earlyCompletion ? SCORE_PERFECT_BONUS : 0;
+    const finalScore = state.score + missedPenalty + perfectBonus;
+
+    onEnd({
+      score: finalScore,
+      baseScore: state.score,
+      missedCount: missed.length,
+      missedPenalty,
+      perfectBonus,
+      correctFlags: state.correctFlags,
+      incorrectFlags: state.incorrectFlags,
+      flagged: state.flagged,
+      events: state.events,
+      earlyCompletion,
+      sessionStart,
+      sessionEnd: Date.now(),
+      totalViolations,
+      allMessages,
+    });
+  };
+
+  const panels = [
+    { title:'#general-chaos', idx:0 },
+    { title:'#ranked-lobby', idx:1 },
+    { title:'#team-comms', idx:2 },
+  ];
+
+  return (
+    <div style={{height:'100vh',display:'flex',flexDirection:'column',position:'relative',zIndex:1}}>
+      {/* HUD */}
+      <div style={{
+        padding:'12px 24px',borderBottom:'1px solid var(--border)',
+        display:'flex',alignItems:'center',gap:16,
+        background:'var(--surface)',flexShrink:0
+      }}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginRight:'auto'}}>
+          <div style={{width:28,height:28,background:'var(--accent)',borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:900,color:'#000',fontFamily:'var(--font-display)'}}>M</div>
+          <span style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:16}}>MODWATCH</span>
+          <span style={{
+            fontFamily:'var(--font-mono)',fontSize:10,padding:'3px 8px',borderRadius:4,
+            background:'rgba(0,229,255,.1)',border:'1px solid rgba(0,229,255,.3)',color:'var(--accent)',
+            textTransform:'uppercase',letterSpacing:'.1em'
+          }}>{level.toUpperCase()}</span>
+        </div>
+
+        <TimerDisplay timeLeft={state.timeLeft} />
+
+        <div style={{
+          display:'flex',alignItems:'center',gap:8,
+          background:'var(--panel)',border:'1px solid var(--border)',
+          borderRadius:10,padding:'10px 18px'
+        }}>
+          <span style={{fontSize:12,color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>SCORE</span>
+          <span style={{fontFamily:'var(--font-display)',fontWeight:900,fontSize:22,color:'var(--accent)'}}>{state.score}</span>
+        </div>
+
+        <div style={{
+          display:'flex',gap:12,
+          background:'var(--panel)',border:'1px solid var(--border)',
+          borderRadius:10,padding:'10px 18px'
+        }}>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:16,fontWeight:700,color:'#10b981'}}>{state.correctFlags}</div>
+            <div style={{fontSize:10,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.06em'}}>Correct</div>
+          </div>
+          <div style={{width:1,background:'var(--border)'}}/>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:16,fontWeight:700,color:'#ef4444'}}>{state.incorrectFlags}</div>
+            <div style={{fontSize:10,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.06em'}}>False+</div>
+          </div>
+        </div>
+
+        <span style={{fontFamily:'var(--font-mono)',fontSize:12,color:'var(--text-muted)'}}>{player.name}</span>
+      </div>
+
+      {/* Chat panels */}
+      <div style={{
+        flex:1,display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,
+        padding:16,overflow:'hidden'
+      }}>
+        {panels.map(p => (
+          <ChatPanel
+            key={p.idx}
+            title={p.title}
+            messages={visibleMessages[p.idx] || []}
+            users={users}
+            flaggedMap={state.flagged}
+            onFlag={handleFlag}
+            isLocked={isLocked}
+            panelIdx={p.idx}
+          />
+        ))}
+      </div>
+
+      {/* Bucket Legend */}
+      <div style={{
+        padding:'10px 24px',borderTop:'1px solid var(--border)',
+        display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',
+        background:'var(--surface)',flexShrink:0
+      }}>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:11,color:'var(--text-muted)',marginRight:4,textTransform:'uppercase',letterSpacing:'.08em'}}>Buckets:</span>
+        {BUCKETS.map(b => (
+          <span key={b.id} style={{
+            fontSize:11,padding:'3px 10px',borderRadius:20,fontFamily:'var(--font-mono)',
+            background:b.bg,color:b.color,border:`1px solid ${b.border}`
+          }}>{b.label}</span>
+        ))}
+        <div style={{marginLeft:'auto',display:'flex',gap:8}}>
+          <span style={{fontSize:12,color:'var(--text-muted)'}}>Click any message to flag it</span>
+          {!isLocked && (
+            <button className="btn-danger" onClick={() => endSession(false)} style={{padding:'6px 14px',fontSize:12}}>
+              End Session
+            </button>
+          )}
+        </div>
+      </div>
+
+      <ScoreFloat lastDelta={state.lastDelta} />
+      {showEarlyModal && <EarlyCompletionModal onEnd={() => endSession(true)} onContinue={() => { setShowEarlyModal(false); /* restart timer? no – just continue */ }} />}
+    </div>
+  );
+}
+
+// Summary Screen
+function SummaryScreen({ results, player, level, onRetry, onLeaderboard }) {
+  const { score, correctFlags, incorrectFlags, missedCount, missedPenalty, perfectBonus, totalViolations, flagged, allMessages, earlyCompletion } = results;
+  const accuracy = getAccuracy(correctFlags, correctFlags + incorrectFlags);
+  const violationMessages = allMessages.filter(m => m.buckets.length > 0);
+  const [expanded, setExpanded] = useState(null);
+
+  const bucketStats = {};
+  BUCKETS.forEach(b => { bucketStats[b.id] = { correct:0, incorrect:0, missed:0 }; });
+  violationMessages.forEach(msg => {
+    msg.buckets.forEach(bid => {
+      const f = flagged[msg.id];
+      if(!f) bucketStats[bid].missed++;
+      else if(f.selectedBuckets.includes(bid)) bucketStats[bid].correct++;
+      else bucketStats[bid].incorrect++;
+    });
+  });
+
+  return (
+    <div style={{minHeight:'100vh',position:'relative',zIndex:1,padding:32,display:'flex',flexDirection:'column',alignItems:'center'}}>
+      <div style={{maxWidth:900,width:'100%',animation:'fadeIn .5s ease'}}>
+        {/* Header */}
+        <div style={{textAlign:'center',marginBottom:40}}>
+          <div style={{fontFamily:'var(--font-mono)',fontSize:12,color:'var(--text-muted)',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:12}}>Session Complete</div>
+          <div style={{fontFamily:'var(--font-display)',fontWeight:900,fontSize:48,lineHeight:1,marginBottom:16}}>
+            {score >= 150 ? '🏆' : score >= 80 ? '🎯' : score >= 0 ? '📊' : '💀'}
+          </div>
+          <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:36,marginBottom:8}}>
+            {score >= 150 ? 'Outstanding' : score >= 80 ? 'Good Work' : score >= 0 ? 'Keep Practicing' : 'Rough Session'}
+          </h2>
+          <p style={{color:'var(--text-muted)',fontSize:14}}>{player.name} · {level.toUpperCase()} difficulty</p>
+        </div>
+
+        {/* Score card */}
+        <div style={{
+          background:'var(--surface)',border:'1px solid var(--accent)',
+          borderRadius:16,padding:32,marginBottom:24,
+          boxShadow:'0 0 40px var(--accent-glow)',textAlign:'center'
+        }}>
+          <div style={{fontFamily:'var(--font-mono)',fontSize:13,color:'var(--text-muted)',letterSpacing:'.15em',textTransform:'uppercase',marginBottom:8}}>Final Score</div>
+          <div style={{fontFamily:'var(--font-display)',fontWeight:900,fontSize:72,color:'var(--accent)',lineHeight:1}}>{score}</div>
+          {earlyCompletion && (
+            <div style={{
+              display:'inline-block',marginTop:12,
+              background:'rgba(168,85,247,.2)',border:'1px solid rgba(168,85,247,.4)',
+              color:'#a855f7',fontFamily:'var(--font-mono)',fontSize:12,
+              padding:'6px 16px',borderRadius:20
+            }}>⭐ PERFECT SESSION +25 BONUS</div>
+          )}
+        </div>
+
+        {/* Stats grid */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,marginBottom:24}}>
+          {[
+            { label:'Accuracy', value:`${accuracy}%`, color:'var(--accent)' },
+            { label:'Correct Flags', value:correctFlags, color:'#10b981' },
+            { label:'False Positives', value:incorrectFlags, color:'#ef4444' },
+            { label:'Missed', value:missedCount, color:'#f59e0b' },
+          ].map(s => (
+            <div key={s.label} style={{
+              background:'var(--surface)',border:'1px solid var(--border)',
+              borderRadius:12,padding:20,textAlign:'center'
+            }}>
+              <div style={{fontFamily:'var(--font-display)',fontWeight:900,fontSize:32,color:s.color}}>{s.value}</div>
+              <div style={{fontSize:12,color:'var(--text-muted)',fontFamily:'var(--font-mono)',textTransform:'uppercase',letterSpacing:'.08em',marginTop:4}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Score breakdown */}
+        <div style={{
+          background:'var(--surface)',border:'1px solid var(--border)',
+          borderRadius:12,padding:24,marginBottom:24
+        }}>
+          <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:14,marginBottom:16,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.1em'}}>Score Breakdown</div>
+          {[
+            { label:'Correct flags', value: `+${correctFlags * 10}`, color:'#10b981' },
+            { label:'False positives', value: `-${incorrectFlags * 5}`, color:'#ef4444' },
+            { label:'Missed violations', value: `${missedPenalty}`, color:'#f59e0b' },
+            { label:'Bucket classification', value: `${results.baseScore - correctFlags * 10 + incorrectFlags * 5}`, color:'var(--accent)' },
+            ...(perfectBonus ? [{ label:'Perfect session bonus', value:`+${perfectBonus}`, color:'#a855f7' }] : []),
+          ].map(item => (
+            <div key={item.label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid var(--border)'}}>
+              <span style={{fontSize:14,color:'var(--text)'}}>{item.label}</span>
+              <span style={{fontFamily:'var(--font-mono)',fontWeight:700,fontSize:14,color:item.color}}>{item.value}</span>
+            </div>
+          ))}
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:12}}>
+            <span style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:15}}>Total</span>
+            <span style={{fontFamily:'var(--font-display)',fontWeight:900,fontSize:24,color:'var(--accent)'}}>{score}</span>
+          </div>
+        </div>
+
+        {/* Bucket breakdown */}
+        <div style={{
+          background:'var(--surface)',border:'1px solid var(--border)',
+          borderRadius:12,padding:24,marginBottom:24
+        }}>
+          <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:14,marginBottom:16,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.1em'}}>Bucket Performance</div>
+          {BUCKETS.map(b => {
+            const s = bucketStats[b.id];
+            const total = s.correct + s.incorrect + s.missed;
+            if(!total) return null;
+            const pct = total ? Math.round((s.correct / total) * 100) : 0;
+            return (
+              <div key={b.id} style={{marginBottom:12}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span style={{fontSize:13,color:b.color,fontWeight:600}}>{b.label}</span>
+                  <span style={{fontFamily:'var(--font-mono)',fontSize:12,color:'var(--text-muted)'}}>{pct}% ({s.correct}/{total})</span>
+                </div>
+                <div style={{height:6,background:'var(--border)',borderRadius:3,overflow:'hidden'}}>
+                  <div style={{height:'100%',width:`${pct}%`,background:b.color,borderRadius:3,transition:'width .6s ease'}}/>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Violation review */}
+        <div style={{
+          background:'var(--surface)',border:'1px solid var(--border)',
+          borderRadius:12,padding:24,marginBottom:32
+        }}>
+          <button
+            onClick={() => setExpanded(expanded === 'review' ? null : 'review')}
+            style={{
+              width:'100%',display:'flex',justifyContent:'space-between',alignItems:'center',
+              background:'none',border:'none',cursor:'pointer',color:'var(--text)',
+              fontFamily:'var(--font-display)',fontWeight:700,fontSize:14,
+              textTransform:'uppercase',letterSpacing:'.1em',color:'var(--text-muted)'
+            }}
+          >
+            <span>Violation Review ({violationMessages.length} total)</span>
+            <span>{expanded === 'review' ? '▲' : '▼'}</span>
+          </button>
+          {expanded === 'review' && (
+            <div style={{marginTop:16,display:'flex',flexDirection:'column',gap:10}}>
+              {violationMessages.map(msg => {
+                const f = flagged[msg.id];
+                const users = USERS[level];
+                const user = users[msg.user % users.length];
+                return (
+                  <div key={msg.id} style={{
+                    padding:14,borderRadius:8,
+                    background: f ? (f.result === 'correct' ? 'rgba(16,185,129,.06)' : 'rgba(239,68,68,.06)') : 'rgba(245,158,11,.06)',
+                    border: `1px solid ${f ? (f.result === 'correct' ? 'rgba(16,185,129,.2)' : 'rgba(239,68,68,.2)') : 'rgba(245,158,11,.2)'}`
+                  }}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
+                      <span style={{fontSize:12,fontWeight:700,color:user.color}}>{user.name}</span>
+                      <span style={{
+                        fontSize:11,padding:'2px 8px',borderRadius:4,fontFamily:'var(--font-mono)',
+                        background: f ? (f.result === 'correct' ? 'rgba(16,185,129,.2)' : 'rgba(239,68,68,.2)') : 'rgba(245,158,11,.2)',
+                        color: f ? (f.result === 'correct' ? '#10b981' : '#ef4444') : '#f59e0b',
+                      }}>
+                        {f ? (f.result === 'correct' ? '✓ CAUGHT' : '✗ MISCLASSIFIED') : '◎ MISSED'}
+                      </span>
+                    </div>
+                    <div style={{fontSize:13,lineHeight:1.5,marginBottom:8}}>{msg.text}</div>
+                    <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                      <span style={{fontSize:11,color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>Correct buckets:</span>
+                      {msg.buckets.map(bid => {
+                        const b = BUCKETS.find(x=>x.id===bid);
+                        return b ? <span key={bid} style={{fontSize:11,padding:'2px 8px',borderRadius:20,background:b.bg,color:b.color,border:`1px solid ${b.border}`,fontFamily:'var(--font-mono)'}}>{b.label}</span> : null;
+                      })}
+                    </div>
+                    {f && f.selectedBuckets.length > 0 && (
+                      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:6}}>
+                        <span style={{fontSize:11,color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>Your selection:</span>
+                        {f.selectedBuckets.map(bid => {
+                          const b = BUCKETS.find(x=>x.id===bid);
+                          const isCorrect = msg.buckets.includes(bid);
+                          return b ? <span key={bid} style={{fontSize:11,padding:'2px 8px',borderRadius:20,fontFamily:'var(--font-mono)',background: isCorrect ? b.bg : 'rgba(239,68,68,.15)',color: isCorrect ? b.color : '#ef4444',border:`1px solid ${isCorrect ? b.border : '#ef444444'}`}}>{b.label}</span> : null;
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div style={{display:'flex',gap:16,justifyContent:'center'}}>
+          <button className="btn-secondary" onClick={onRetry}>← Try Again</button>
+          <button className="btn-primary" onClick={onLeaderboard}>View Leaderboard →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Leaderboard (mock with local storage simulation)
+function LeaderboardScreen({ player, score, level, onBack }) {
+  // Generate simulated leaderboard
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('modwatch_leaderboard') || '[]');
+    const existing = stored.findIndex(e => e.email === player.email);
+    const newEntry = { name: player.name, email: player.email, score, level, date: new Date().toLocaleDateString() };
+    if(existing >= 0) {
+      if(score > stored[existing].score) stored[existing] = newEntry;
+    } else {
+      stored.push(newEntry);
+    }
+    // Add some simulated entries for flavor
+    const simEntries = [
+      { name:'ShadowMod_X', email:'s@x.com', score:215, level:'high', date:'2025-12-01' },
+      { name:'QuickFlag_99', email:'q@99.com', score:190, level:'high', date:'2025-12-02' },
+      { name:'NeonChecker', email:'n@c.com', score:175, level:'medium', date:'2025-12-03' },
+      { name:'AcePatrol', email:'a@p.com', score:155, level:'high', date:'2025-12-04' },
+      { name:'ModMaster2K', email:'m@2k.com', score:140, level:'medium', date:'2025-12-05' },
+      { name:'ZeroTolerance', email:'z@t.com', score:125, level:'low', date:'2025-12-06' },
+      { name:'PatrolBot', email:'p@b.com', score:110, level:'low', date:'2025-12-07' },
+    ];
+    const combined = [...stored, ...simEntries.filter(s => !stored.find(e => e.email === s.email))];
+    combined.sort((a,b) => b.score - a.score);
+    localStorage.setItem('modwatch_leaderboard', JSON.stringify(stored));
+    setEntries(combined.slice(0, 15));
+  }, []);
+
+  const myRank = entries.findIndex(e => e.email === player.email) + 1;
+
+  return (
+    <div style={{minHeight:'100vh',position:'relative',zIndex:1,padding:32,display:'flex',flexDirection:'column',alignItems:'center'}}>
+      <div style={{maxWidth:700,width:'100%',animation:'fadeIn .5s ease'}}>
+        <div style={{textAlign:'center',marginBottom:40}}>
+          <div style={{fontFamily:'var(--font-mono)',fontSize:12,color:'var(--text-muted)',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:12}}>Global Rankings</div>
+          <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:36}}>🏆 Leaderboard</h2>
+          {myRank > 0 && (
+            <div style={{marginTop:12,display:'inline-block',background:'rgba(0,229,255,.1)',border:'1px solid rgba(0,229,255,.3)',color:'var(--accent)',fontFamily:'var(--font-mono)',fontSize:13,padding:'6px 16px',borderRadius:20}}>
+              Your rank: #{myRank}
+            </div>
+          )}
+        </div>
+
+        <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:12,overflow:'hidden',marginBottom:24}}>
+          <div style={{
+            display:'grid',gridTemplateColumns:'48px 1fr 80px 80px 80px',
+            padding:'12px 20px',borderBottom:'1px solid var(--border)',
+            fontFamily:'var(--font-mono)',fontSize:11,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.08em'
+          }}>
+            <div>Rank</div><div>Player</div><div style={{textAlign:'center'}}>Score</div>
+            <div style={{textAlign:'center'}}>Level</div><div style={{textAlign:'center'}}>Date</div>
+          </div>
+          {entries.map((e, i) => {
+            const isMe = e.email === player.email;
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+            return (
+              <div key={i} style={{
+                display:'grid',gridTemplateColumns:'48px 1fr 80px 80px 80px',
+                padding:'14px 20px',
+                borderBottom: i < entries.length - 1 ? '1px solid var(--border)' : 'none',
+                background: isMe ? 'rgba(0,229,255,.06)' : 'transparent',
+                borderLeft: isMe ? '3px solid var(--accent)' : '3px solid transparent',
+                transition:'background .15s'
+              }}>
+                <div style={{fontFamily:'var(--font-mono)',fontSize:14,display:'flex',alignItems:'center'}}>{medal}</div>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <div style={{
+                    width:30,height:30,borderRadius:'50%',
+                    background:`rgba(0,229,255,.15)`,border:'1px solid rgba(0,229,255,.3)',
+                    display:'flex',alignItems:'center',justifyContent:'center',
+                    fontSize:12,fontWeight:700,color:'var(--accent)',fontFamily:'var(--font-mono)'
+                  }}>{e.name[0]}</div>
+                  <span style={{fontSize:14,fontWeight: isMe ? 700 : 400,color: isMe ? 'var(--accent)' : 'var(--text)'}}>{e.name} {isMe ? '(you)' : ''}</span>
+                </div>
+                <div style={{textAlign:'center',fontFamily:'var(--font-mono)',fontWeight:700,fontSize:15,color: i < 3 ? '#f59e0b' : 'var(--text)',display:'flex',alignItems:'center',justifyContent:'center'}}>{e.score}</div>
+                <div style={{textAlign:'center',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <span style={{
+                    fontSize:10,padding:'2px 8px',borderRadius:20,fontFamily:'var(--font-mono)',
+                    background: e.level==='high' ? 'rgba(239,68,68,.15)' : e.level==='medium' ? 'rgba(245,158,11,.15)' : 'rgba(16,185,129,.15)',
+                    color: e.level==='high' ? '#ef4444' : e.level==='medium' ? '#f59e0b' : '#10b981',
+                  }}>{e.level}</span>
+                </div>
+                <div style={{textAlign:'center',fontSize:12,color:'var(--text-muted)',display:'flex',alignItems:'center',justifyContent:'center'}}>{e.date}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{display:'flex',gap:16,justifyContent:'center'}}>
+          <button className="btn-secondary" onClick={onBack}>← Back to Dashboard</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function App() {
+  const [screen, setScreen] = useState('start');
+  const [player, setPlayer] = useState(null);
+  const [level, setLevel] = useState(null);
+  const [results, setResults] = useState(null);
+
+  const handleStart = (p) => { setPlayer(p); setScreen('levels'); };
+  const handleSelectLevel = (l) => { setLevel(l); setScreen('game'); };
+  const handleEnd = (r) => { setResults(r); setScreen('summary'); };
+  const handleRetry = () => { setScreen('levels'); };
+  const handleLeaderboard = () => setScreen('leaderboard');
+  const handleBack = () => { setScreen('levels'); };
+
+  return (
+    <>
+      {screen === 'start' && <StartScreen onStart={handleStart} />}
+      {screen === 'levels' && <LevelSelect player={player} onSelectLevel={handleSelectLevel} />}
+      {screen === 'game' && level && (
+        <GameSession
+          level={level}
+          player={player}
+          dataset={DATASETS[level]}
+          onEnd={handleEnd}
+        />
+      )}
+      {screen === 'summary' && results && (
+        <SummaryScreen
+          results={results}
+          player={player}
+          level={level}
+          onRetry={handleRetry}
+          onLeaderboard={handleLeaderboard}
+        />
+      )}
+      {screen === 'leaderboard' && (
+        <LeaderboardScreen
+          player={player}
+          score={results?.score || 0}
+          level={level}
+          onBack={handleBack}
+        />
+      )}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
