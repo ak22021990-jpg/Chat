@@ -101,7 +101,7 @@ input::placeholder{color:var(--text-muted)}
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect, useReducer, useRef, useCallback, useContext, createContext } = React;
+const { useState, useEffect, useReducer, useRef, useCallback, useContext, createContext, useLayoutEffect } = React;
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 const BUCKETS = [
@@ -309,6 +309,14 @@ function getDatasetsWithExternalFallback(rows) {
   }, {});
 }
 
+function getViolationCount(dataset, fallbackCount = 0) {
+  if(dataset?.messages?.length) {
+    return dataset.messages.filter(m => Array.isArray(m.buckets) && m.buckets.length > 0).length;
+  }
+  return typeof dataset?.violations === 'number' ? dataset.violations : fallbackCount;
+}
+
+
 // ─── SCORING ENGINE ───────────────────────────────────────────────────────────
 const SCORE_CORRECT_FLAG = 10;
 const SCORE_CORRECT_BUCKET = 10;
@@ -317,6 +325,7 @@ const SCORE_FALSE_POSITIVE = -5;
 const SCORE_MISSED = -5;
 const SCORE_PERFECT_BONUS = 25;
 const FLAG_COOLDOWN = 500;
+const SESSION_DURATION_SECONDS = 180;
 
 function scoringReducer(state, action) {
   switch(action.type) {
@@ -329,12 +338,13 @@ function scoringReducer(state, action) {
       let result = '';
       if(isViolation) {
         delta += SCORE_CORRECT_FLAG;
-        let correctCount = 0;
         selectedBuckets.forEach(b => {
-          if(groundTruth.includes(b)) { delta += SCORE_CORRECT_BUCKET; correctCount++; }
+          if(groundTruth.includes(b)) { delta += SCORE_CORRECT_BUCKET; }
           else delta += SCORE_WRONG_BUCKET;
         });
-        result = 'correct';
+        const allGroundTruthSelected = groundTruth.every(b => selectedBuckets.includes(b));
+        const noWrongSelection = selectedBuckets.every(b => groundTruth.includes(b));
+        result = allGroundTruthSelected && noWrongSelection ? 'correct' : 'incorrect';
       } else {
         delta += SCORE_FALSE_POSITIVE;
         selectedBuckets.forEach(() => { delta += SCORE_WRONG_BUCKET; });
@@ -361,11 +371,15 @@ function scoringReducer(state, action) {
   }
 }
 function initScoringState() {
-  return { score:0, flagged:{}, events:[], timeLeft:300, lastDelta:null, correctFlags:0, incorrectFlags:0 };
+  return { score:0, flagged:{}, events:[], timeLeft:SESSION_DURATION_SECONDS, lastDelta:null, correctFlags:0, incorrectFlags:0 };
 }
 
 // ─── CONTEXT ──────────────────────────────────────────────────────────────────
 const GameContext = createContext(null);
+const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw3IBEcb3c7aCDYca2GFgkiHfZlDtcF2-icxtW256d-Sx9Y2maf8f7Jq1-wizDzXmMU/exec'; // Paste deployed Apps Script Web App URL
+const MIN_IDENTIFIED_TO_UNLOCK = 10;
+const PROGRESS_STORAGE_KEY = 'modwatch_progress';
+const LOCAL_LEADERBOARD_KEY = 'modwatch_leaderboard';
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function formatTime(s) {
@@ -376,6 +390,99 @@ function formatTime(s) {
 function getAccuracy(correct, total) {
   if(!total) return 0;
   return Math.round((correct / total) * 100);
+}
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+function getProgressStore() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '{}'); }
+  catch { return {}; }
+}
+function getUserProgress(email) {
+  const key = normalizeEmail(email);
+  const store = getProgressStore();
+  return store[key] || { lowCleared: 0, mediumCleared: 0, highCleared: 0 };
+}
+function setUserProgress(email, progress) {
+  const key = normalizeEmail(email);
+  const store = getProgressStore();
+  store[key] = {
+    lowCleared: Math.max(0, Number(progress?.lowCleared) || 0),
+    mediumCleared: Math.max(0, Number(progress?.mediumCleared) || 0),
+    highCleared: Math.max(0, Number(progress?.highCleared) || 0),
+  };
+  localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(store));
+}
+function getUnlockState(email) {
+  const progress = getUserProgress(email);
+  const mediumUnlocked = (progress.lowCleared || 0) >= MIN_IDENTIFIED_TO_UNLOCK;
+  const highUnlocked = (progress.mediumCleared || 0) >= MIN_IDENTIFIED_TO_UNLOCK;
+  return {
+    low: true,
+    medium: mediumUnlocked,
+    high: highUnlocked,
+    lowCleared: progress.lowCleared || 0,
+    mediumCleared: progress.mediumCleared || 0,
+    highCleared: progress.highCleared || 0,
+  };
+}
+function toDateString(value = Date.now()) {
+  return new Date(value).toISOString().slice(0, 10);
+}
+function sanitizeLeaderboardRow(row) {
+  return {
+    name: String(row?.name || ''),
+    email: normalizeEmail(row?.email),
+    score: Number(row?.score) || 0,
+    level: String(row?.level || 'low').toLowerCase(),
+    date: String(row?.date || toDateString()),
+  };
+}
+function mergeLeaderboardRows(rows) {
+  const byEmail = new Map();
+  rows.forEach((row) => {
+    const clean = sanitizeLeaderboardRow(row);
+    if(!clean.email) return;
+    const existing = byEmail.get(clean.email);
+    if(!existing || clean.score > existing.score) byEmail.set(clean.email, clean);
+  });
+  return Array.from(byEmail.values()).sort((a, b) => b.score - a.score);
+}
+function upsertLocalLeaderboard(row) {
+  const stored = JSON.parse(localStorage.getItem(LOCAL_LEADERBOARD_KEY) || '[]');
+  const merged = mergeLeaderboardRows([...stored, row]);
+  localStorage.setItem(LOCAL_LEADERBOARD_KEY, JSON.stringify(merged));
+  return merged;
+}
+function postLeaderboardNoCors(row) {
+  if(!APPS_SCRIPT_WEB_APP_URL) return Promise.resolve(false);
+  return fetch(APPS_SCRIPT_WEB_APP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: 'add', row: sanitizeLeaderboardRow(row) }),
+  }).then(() => true).catch(() => false);
+}
+function fetchLeaderboardJsonp(limit = 100) {
+  if(!APPS_SCRIPT_WEB_APP_URL) return Promise.resolve([]);
+  return new Promise((resolve, reject) => {
+    const callback = `modwatch_jsonp_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+    const script = document.createElement('script');
+    const cleanup = () => {
+      if(script.parentNode) script.parentNode.removeChild(script);
+      try { delete window[callback]; } catch { window[callback] = undefined; }
+    };
+    window[callback] = (payload) => {
+      cleanup();
+      resolve(Array.isArray(payload?.rows) ? payload.rows : []);
+    };
+    script.onerror = () => {
+      cleanup();
+      reject(new Error('Failed to load leaderboard JSONP'));
+    };
+    script.src = `${APPS_SCRIPT_WEB_APP_URL}?action=list&limit=${encodeURIComponent(limit)}&callback=${encodeURIComponent(callback)}`;
+    document.body.appendChild(script);
+  });
 }
 
 // ─── COMPONENTS ───────────────────────────────────────────────────────────────
@@ -454,15 +561,13 @@ function StartScreen({ onStart }) {
             }}>
               <div style={{fontFamily:'var(--font-display)',fontWeight:700,fontSize:12,letterSpacing:'.1em',color:'var(--text-muted)',marginBottom:14,textTransform:'uppercase'}}>Scoring Rules</div>
               {[
-                ['✓ Correct flag','+10 pts'],
-                ['✓ Correct bucket','+10 pts each'],
-                ['✗ False positive','-5 pts'],
-                ['✗ Wrong bucket','-10 pts each'],
-                ['◎ Missed violation','-5 pts'],
-                ['★ Perfect session','+25 bonus'],
+                ['✓ Exact violation match','Raw points earned'],
+                ['✗ Partial/wrong match','Raw points reduced'],
+                ['★ Perfect session','Raw bonus applied'],
+                ['▣ Final score','Normalized to 0–100'],
               ].map(([label,val]) => (
                 <div key={label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-                  <span style={{fontSize:13,color: label.startsWith('✓') ? '#10b981' : label.startsWith('✗') ? '#ef4444' : label.startsWith('◎') ? '#f59e0b' : '#a855f7'}}>{label}</span>
+                  <span style={{fontSize:13,color: label.startsWith('✓') ? '#10b981' : label.startsWith('✗') ? '#ef4444' : label.startsWith('▣') ? 'var(--accent)' : '#a855f7'}}>{label}</span>
                   <span style={{fontFamily:'var(--font-mono)',fontSize:13,color:'var(--text)',fontWeight:700}}>{val}</span>
                 </div>
               ))}
@@ -497,16 +602,17 @@ function StartScreen({ onStart }) {
 }
 
 // Level Selection
-function LevelSelect({ player, onSelectLevel, datasets }) {
+function LevelSelect({ player, onSelectLevel, datasets, unlockState }) {
   const levels = [
-    { id:'low', label:'BEGINNER', tag:'LOW', color:'#10b981', violations:10, desc:'10 violations · Obvious patterns · Slower pacing', detail:'Clear, direct violations. Good for first-time moderators.' },
-    { id:'medium', label:'INTERMEDIATE', tag:'MEDIUM', color:'#f59e0b', violations:15, desc:'15 violations · Ambiguous context · Mixed categories', detail:'Increased complexity with multi-label and contextual cases.' },
-    { id:'high', label:'ADVANCED', tag:'HIGH', color:'#ef4444', violations:15, desc:'15 violations · Dense noise · Compound violations', detail:'High-density violations with subtle and overlapping cases.' },
+    { id:'low', label:'BEGINNER', tag:'LOW', color:'#10b981', violations:15, desc:'15 violations | Obvious patterns | Slower pacing', detail:'Clear, direct violations. Good for first-time moderators.' },
+    { id:'medium', label:'INTERMEDIATE', tag:'MEDIUM', color:'#f59e0b', violations:15, desc:'15 violations | Ambiguous context | Mixed categories', detail:'Increased complexity with multi-label and contextual cases.' },
+    { id:'high', label:'ADVANCED', tag:'HIGH', color:'#ef4444', violations:15, desc:'15 violations | Dense noise | Compound violations', detail:'High-density violations with subtle and overlapping cases.' },
   ];
   const levelsWithCounts = levels.map(level => ({
     ...level,
-    violations: datasets?.[level.id]?.violations ?? level.violations,
-    desc: `${datasets?.[level.id]?.violations ?? level.violations} violations · ${String(level.desc).split('·').slice(-2).join('·').trim()}`,
+    locked: !unlockState?.[level.id],
+    violations: getViolationCount(datasets?.[level.id], level.violations),
+    desc: `${getViolationCount(datasets?.[level.id], level.violations)} violations | ${String(level.desc).split('|').slice(-2).join('|').trim()}`,
   }));
 
   return (
@@ -532,29 +638,47 @@ function LevelSelect({ player, onSelectLevel, datasets }) {
         <div style={{marginBottom:40,textAlign:'center'}}>
           <div style={{fontFamily:'var(--font-mono)',fontSize:12,letterSpacing:'.2em',color:'var(--text-muted)',marginBottom:12,textTransform:'uppercase'}}>Select Difficulty</div>
           <h2 style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:36}}>Choose Your Level</h2>
+          <p style={{marginTop:12,fontSize:13,color:'var(--text-muted)'}}>
+            Medium unlock: <span style={{color:'var(--accent)',fontFamily:'var(--font-mono)'}}>{unlockState?.lowCleared || 0}</span> / {MIN_IDENTIFIED_TO_UNLOCK} in Beginner
+          </p>
+          <p style={{marginTop:4,fontSize:13,color:'var(--text-muted)'}}>
+            Advanced unlock: <span style={{color:'var(--accent)',fontFamily:'var(--font-mono)'}}>{unlockState?.mediumCleared || 0}</span> / {MIN_IDENTIFIED_TO_UNLOCK} in Intermediate
+          </p>
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:20,maxWidth:960,width:'100%'}}>
           {levelsWithCounts.map(level => (
             <div
               key={level.id}
-              onClick={() => onSelectLevel(level.id)}
+              onClick={() => !level.locked && onSelectLevel(level.id)}
               style={{
                 background:'var(--surface)',border:`1px solid var(--border)`,
-                borderRadius:14,padding:28,cursor:'pointer',
+                borderRadius:14,padding: level.locked ? '40px 28px 28px' : '28px',
+                cursor: level.locked ? 'not-allowed' : 'pointer',
                 transition:'all .2s ease',position:'relative',overflow:'hidden',
+                opacity: level.locked ? 0.65 : 1,
               }}
               onMouseEnter={e => {
+                if(level.locked) return;
                 e.currentTarget.style.borderColor = level.color;
                 e.currentTarget.style.transform = 'translateY(-4px)';
                 e.currentTarget.style.boxShadow = `0 12px 32px ${level.color}22`;
               }}
               onMouseLeave={e => {
+                if(level.locked) return;
                 e.currentTarget.style.borderColor = 'var(--border)';
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
+              {level.locked && (
+                <div style={{
+                  position:'absolute',top:10,left:10,
+                  background:'rgba(239,68,68,.2)',border:'1px solid rgba(239,68,68,.45)',
+                  color:'#ef4444',fontFamily:'var(--font-mono)',fontSize:10,textTransform:'uppercase',
+                  letterSpacing:'.08em',padding:'4px 8px',borderRadius:20
+                }}>Locked</div>
+              )}
               <div style={{
                 position:'absolute',top:0,right:0,
                 background:level.color,color:'#000',
@@ -586,7 +710,7 @@ function LevelSelect({ player, onSelectLevel, datasets }) {
                   <div style={{fontSize:11,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.06em'}}>Violations</div>
                 </div>
                 <div style={{textAlign:'center'}}>
-                  <div style={{fontFamily:'var(--font-mono)',fontSize:20,fontWeight:700,color:'var(--text)'}}>5:00</div>
+                  <div style={{fontFamily:'var(--font-mono)',fontSize:20,fontWeight:700,color:'var(--text)'}}>3:00</div>
                   <div style={{fontSize:11,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.06em'}}>Time Limit</div>
                 </div>
                 <div style={{textAlign:'center'}}>
@@ -595,8 +719,12 @@ function LevelSelect({ player, onSelectLevel, datasets }) {
                 </div>
               </div>
 
-              <button className="btn-primary" style={{width:'100%',justifyContent:'center',background:level.color,color: level.id==='low'?'#000':'#fff'}}>
-                Start {level.label} →
+              <button className="btn-primary" disabled={level.locked} style={{width:'100%',justifyContent:'center',background:level.color,color: level.id==='low'?'#000':'#fff'}}>
+                {level.locked
+                  ? (level.id === 'medium'
+                    ? `Unlock at ${MIN_IDENTIFIED_TO_UNLOCK} in Beginner`
+                    : `Unlock at ${MIN_IDENTIFIED_TO_UNLOCK} in Intermediate`)
+                  : `Start ${level.label} →`}
               </button>
             </div>
           ))}
@@ -609,8 +737,25 @@ function LevelSelect({ player, onSelectLevel, datasets }) {
 // Floating Bucket Panel
 function BucketPanel({ message, position, onConfirm, onClose }) {
   const [selected, setSelected] = useState([]);
+  const panelRef = useRef(null);
+  const [panelPos, setPanelPos] = useState({ x: position.x, y: position.y });
 
   const toggle = (id) => setSelected(prev => prev.includes(id) ? prev.filter(x=>x!==id) : [...prev, id]);
+
+  const recalcPanelPosition = useCallback(() => {
+    const margin = 12;
+    const panelWidth = 270;
+    const panelHeight = panelRef.current?.offsetHeight || 360;
+    const clampedX = Math.min(
+      Math.max(margin, position.x),
+      Math.max(margin, window.innerWidth - panelWidth - margin)
+    );
+    const clampedY = Math.min(
+      Math.max(margin, position.y),
+      Math.max(margin, window.innerHeight - panelHeight - margin)
+    );
+    setPanelPos({ x: clampedX, y: clampedY });
+  }, [position.x, position.y]);
 
   useEffect(() => {
     const handleClick = (e) => {
@@ -620,11 +765,21 @@ function BucketPanel({ message, position, onConfirm, onClose }) {
     return () => document.removeEventListener('click', handleClick);
   }, [onClose]);
 
+  useLayoutEffect(() => {
+    recalcPanelPosition();
+  }, [recalcPanelPosition, selected.length]);
+
+  useEffect(() => {
+    const onResize = () => recalcPanelPosition();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [recalcPanelPosition]);
+
   return (
-    <div className="bucket-panel" style={{
+    <div ref={panelRef} className="bucket-panel" style={{
       position:'fixed',
-      top: Math.min(position.y, window.innerHeight - 340),
-      left: Math.min(position.x, window.innerWidth - 280),
+      top: panelPos.y,
+      left: panelPos.x,
       width:270,
       background:'var(--surface)',border:'1px solid var(--border-bright)',
       borderRadius:12,boxShadow:'0 20px 60px rgba(0,0,0,.6)',
@@ -846,7 +1001,7 @@ function ScoreFloat({ lastDelta }) {
 // Timer
 function TimerDisplay({ timeLeft }) {
   const isUrgent = timeLeft <= 30;
-  const pct = timeLeft / 300;
+  const pct = timeLeft / SESSION_DURATION_SECONDS;
 
   return (
     <div style={{
@@ -907,12 +1062,17 @@ function GameSession({ level, player, dataset, onEnd }) {
   const users = dataset?.users?.length ? dataset.users : USERS[level];
   const totalViolations = dataset.violations;
   const allMessages = dataset.messages;
+  const revealWindowSeconds = Math.max(10, SESSION_DURATION_SECONDS - 8);
+  const maxMessageTime = allMessages.reduce((max, msg) => Math.max(max, Number(msg.t) || 0), 0);
 
   // Message reveal engine
   useEffect(() => {
     const intervals = [];
     allMessages.forEach(msg => {
-      const delay = msg.t * 1000;
+      const normalizedT = Math.max(0, Number(msg.t) || 0);
+      const delay = maxMessageTime > 0
+        ? Math.round((normalizedT / maxMessageTime) * revealWindowSeconds * 1000)
+        : 0;
       const t = setTimeout(() => {
         if(!isLocked) {
           setVisibleMessages(prev => ({
@@ -924,7 +1084,7 @@ function GameSession({ level, player, dataset, onEnd }) {
       intervals.push(t);
     });
     return () => intervals.forEach(clearTimeout);
-  }, []);
+  }, [allMessages, isLocked, maxMessageTime, revealWindowSeconds]);
 
   // Timer
   useEffect(() => {
@@ -967,11 +1127,17 @@ function GameSession({ level, player, dataset, onEnd }) {
     const missed = violationMessages.filter(m => !state.flagged[m.id]);
     const missedPenalty = missed.length * SCORE_MISSED;
     const perfectBonus = earlyCompletion ? SCORE_PERFECT_BONUS : 0;
-    const finalScore = state.score + missedPenalty + perfectBonus;
+    const rawScore = state.score + missedPenalty + perfectBonus;
+    const maxRawScore = violationMessages.reduce((sum, m) => {
+      return sum + SCORE_CORRECT_FLAG + (m.buckets.length * SCORE_CORRECT_BUCKET);
+    }, 0) + SCORE_PERFECT_BONUS;
+    const finalScore = Math.round((Math.max(0, rawScore) / Math.max(1, maxRawScore)) * 100);
 
     onEnd({
       score: finalScore,
-      baseScore: state.score,
+      baseScore: rawScore,
+      rawScore,
+      maxRawScore,
       missedCount: missed.length,
       missedPenalty,
       perfectBonus,
@@ -1059,29 +1225,6 @@ function GameSession({ level, player, dataset, onEnd }) {
             panelIdx={p.idx}
           />
         ))}
-      </div>
-
-      {/* Bucket Legend */}
-      <div style={{
-        padding:'10px 24px',borderTop:'1px solid var(--border)',
-        display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',
-        background:'var(--surface)',flexShrink:0
-      }}>
-        <span style={{fontFamily:'var(--font-mono)',fontSize:11,color:'var(--text-muted)',marginRight:4,textTransform:'uppercase',letterSpacing:'.08em'}}>Buckets:</span>
-        {BUCKETS.map(b => (
-          <span key={b.id} style={{
-            fontSize:11,padding:'3px 10px',borderRadius:20,fontFamily:'var(--font-mono)',
-            background:b.bg,color:b.color,border:`1px solid ${b.border}`
-          }}>{b.label}</span>
-        ))}
-        <div style={{marginLeft:'auto',display:'flex',gap:8}}>
-          <span style={{fontSize:12,color:'var(--text-muted)'}}>Click any message to flag it</span>
-          {!isLocked && (
-            <button className="btn-danger" onClick={() => endSession(false)} style={{padding:'6px 14px',fontSize:12}}>
-              End Session
-            </button>
-          )}
-        </div>
       </div>
 
       <ScoreFloat lastDelta={state.lastDelta} />
@@ -1282,34 +1425,26 @@ function SummaryScreen({ results, player, level, onRetry, onLeaderboard }) {
   );
 }
 
-// Leaderboard (mock with local storage simulation)
-function LeaderboardScreen({ player, score, level, onBack }) {
-  // Generate simulated leaderboard
+// Leaderboard
+function LeaderboardScreen({ player, onBack }) {
   const [entries, setEntries] = useState([]);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('modwatch_leaderboard') || '[]');
-    const existing = stored.findIndex(e => e.email === player.email);
-    const newEntry = { name: player.name, email: player.email, score, level, date: new Date().toLocaleDateString() };
-    if(existing >= 0) {
-      if(score > stored[existing].score) stored[existing] = newEntry;
-    } else {
-      stored.push(newEntry);
-    }
-    // Add some simulated entries for flavor
-    const simEntries = [
-      { name:'ShadowMod_X', email:'s@x.com', score:215, level:'high', date:'2025-12-01' },
-      { name:'QuickFlag_99', email:'q@99.com', score:190, level:'high', date:'2025-12-02' },
-      { name:'NeonChecker', email:'n@c.com', score:175, level:'medium', date:'2025-12-03' },
-      { name:'AcePatrol', email:'a@p.com', score:155, level:'high', date:'2025-12-04' },
-      { name:'ModMaster2K', email:'m@2k.com', score:140, level:'medium', date:'2025-12-05' },
-      { name:'ZeroTolerance', email:'z@t.com', score:125, level:'low', date:'2025-12-06' },
-      { name:'PatrolBot', email:'p@b.com', score:110, level:'low', date:'2025-12-07' },
-    ];
-    const combined = [...stored, ...simEntries.filter(s => !stored.find(e => e.email === s.email))];
-    combined.sort((a,b) => b.score - a.score);
-    localStorage.setItem('modwatch_leaderboard', JSON.stringify(stored));
-    setEntries(combined.slice(0, 15));
+    let active = true;
+    const load = async () => {
+      const localRows = JSON.parse(localStorage.getItem(LOCAL_LEADERBOARD_KEY) || '[]');
+      let remoteRows = [];
+      try {
+        remoteRows = await fetchLeaderboardJsonp(200);
+      } catch(err) {
+        console.warn('Leaderboard fetch fallback to local only:', err);
+      }
+      if(!active) return;
+      const combined = mergeLeaderboardRows([...localRows, ...remoteRows]).slice(0, 15);
+      setEntries(combined);
+    };
+    load();
+    return () => { active = false; };
   }, []);
 
   const myRank = entries.findIndex(e => e.email === player.email) + 1;
@@ -1387,6 +1522,7 @@ function App() {
   const [level, setLevel] = useState(null);
   const [results, setResults] = useState(null);
   const [datasets, setDatasets] = useState(DATASETS);
+  const [unlockState, setUnlockState] = useState(getUnlockState(''));
 
   useEffect(() => {
     let active = true;
@@ -1406,9 +1542,45 @@ function App() {
     return () => { active = false; };
   }, []);
 
-  const handleStart = (p) => { setPlayer(p); setScreen('levels'); };
-  const handleSelectLevel = (l) => { setLevel(l); setScreen('game'); };
-  const handleEnd = (r) => { setResults(r); setScreen('summary'); };
+  const handleStart = (p) => {
+    setPlayer(p);
+    setUnlockState(getUnlockState(p.email));
+    setScreen('levels');
+  };
+  const handleSelectLevel = (l) => {
+    const currentUnlock = getUnlockState(player?.email);
+    if(l === 'medium' && !currentUnlock.medium) return;
+    if(l === 'high' && !currentUnlock.high) return;
+    setLevel(l);
+    setScreen('game');
+  };
+  const handleEnd = (r) => {
+    const current = getUserProgress(player?.email);
+    const correct = Number(r?.correctFlags) || 0;
+    const next = {
+      lowCleared: current.lowCleared || 0,
+      mediumCleared: current.mediumCleared || 0,
+      highCleared: current.highCleared || 0,
+    };
+    if(level === 'low') next.lowCleared = Math.max(next.lowCleared, correct);
+    if(level === 'medium') next.mediumCleared = Math.max(next.mediumCleared, correct);
+    if(level === 'high') next.highCleared = Math.max(next.highCleared, correct);
+    setUserProgress(player?.email, next);
+    setUnlockState(getUnlockState(player?.email));
+
+    const row = {
+      name: player?.name || '',
+      email: player?.email || '',
+      score: Number(r?.score) || 0,
+      level: level || 'low',
+      date: toDateString(),
+    };
+    upsertLocalLeaderboard(row);
+    postLeaderboardNoCors(row);
+
+    setResults(r);
+    setScreen('summary');
+  };
   const handleRetry = () => { setScreen('levels'); };
   const handleLeaderboard = () => setScreen('leaderboard');
   const handleBack = () => { setScreen('levels'); };
@@ -1416,7 +1588,7 @@ function App() {
   return (
     <>
       {screen === 'start' && <StartScreen onStart={handleStart} />}
-      {screen === 'levels' && <LevelSelect player={player} onSelectLevel={handleSelectLevel} datasets={datasets} />}
+      {screen === 'levels' && <LevelSelect player={player} onSelectLevel={handleSelectLevel} datasets={datasets} unlockState={unlockState} />}
       {screen === 'game' && level && (
         <GameSession
           level={level}
@@ -1437,8 +1609,6 @@ function App() {
       {screen === 'leaderboard' && (
         <LeaderboardScreen
           player={player}
-          score={results?.score || 0}
-          level={level}
           onBack={handleBack}
         />
       )}
