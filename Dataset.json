@@ -1,64 +1,2541 @@
 [
-{"level":"low","message_id":"L001","chat_id":1,"simulated_user":"silverFox","message_text":"gg everyone","timestamp_offset":4,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L002","chat_id":2,"simulated_user":"neonNinja","message_text":"lol that nade was trash","timestamp_offset":7,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L003","chat_id":3,"simulated_user":"acePilot","message_text":"you carried that round","timestamp_offset":12,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L004","chat_id":1,"simulated_user":"driftKing","message_text":"stop being such an idiot","timestamp_offset":18,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"low","message_id":"L005","chat_id":2,"simulated_user":"loneWolf","message_text":"anyone up for 2v2 later?","timestamp_offset":22,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L006","chat_id":3,"simulated_user":"byteMage","message_text":"that clip was insane 😂","timestamp_offset":29,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L007","chat_id":1,"simulated_user":"pwnMaster","message_text":"you noob get out of my game","timestamp_offset":45,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"low","message_id":"L008","chat_id":2,"simulated_user":"zenith","message_text":"wtf was that push","timestamp_offset":51,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L009","chat_id":3,"simulated_user":"glitch","message_text":"she was sharing explicit adult content","timestamp_offset":58,"ground_truth_buckets":["sexual_explicit"]},
-{"level":"low","message_id":"L010","chat_id":1,"simulated_user":"sprite","message_text":"nice shot 🔥","timestamp_offset":64,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L011","chat_id":2,"simulated_user":"stark","message_text":"why are you even here clown 🤡","timestamp_offset":79,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"low","message_id":"L012","chat_id":3,"simulated_user":"raven","message_text":"these people should disappear","timestamp_offset":85,"ground_truth_buckets":["hate_speech"]},
-{"level":"low","message_id":"L013","chat_id":1,"simulated_user":"flame","message_text":"brb dinner","timestamp_offset":94,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L014","chat_id":2,"simulated_user":"orbit","message_text":"gg wp","timestamp_offset":101,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L015","chat_id":3,"simulated_user":"nova","message_text":"that was sus 😏","timestamp_offset":118,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L016","chat_id":1,"simulated_user":"shadow","message_text":"you all are pathetic losers","timestamp_offset":127,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"low","message_id":"L017","chat_id":2,"simulated_user":"echo","message_text":"i'm done with this team","timestamp_offset":135,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L018","chat_id":3,"simulated_user":"viper","message_text":"stop spamming dumb emojis 🙄🙄","timestamp_offset":147,"ground_truth_buckets":["emoji_abuse"]},
-{"level":"low","message_id":"L019","chat_id":1,"simulated_user":"myst","message_text":"that stream had explicit content earlier","timestamp_offset":156,"ground_truth_buckets":["sexual_explicit"]},
-{"level":"low","message_id":"L020","chat_id":2,"simulated_user":"bolt","message_text":"we clutch this","timestamp_offset":169,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L021","chat_id":3,"simulated_user":"alpha","message_text":"stop being dramatic 🙄","timestamp_offset":178,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"low","message_id":"L022","chat_id":1,"simulated_user":"novaByte","message_text":"ahah 😂😂","timestamp_offset":192,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L023","chat_id":2,"simulated_user":"cypher","message_text":"report that player","timestamp_offset":201,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L024","chat_id":3,"simulated_user":"pixel","message_text":"you are a clown 🤡🤡","timestamp_offset":211,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"low","message_id":"L025","chat_id":1,"simulated_user":"rook","message_text":"go back to where you came from","timestamp_offset":225,"ground_truth_buckets":["racial_ethnic"]},
-{"level":"low","message_id":"L026","chat_id":2,"simulated_user":"quake","message_text":"that clip showed adult content","timestamp_offset":238,"ground_truth_buckets":["sexual_explicit"]},
-{"level":"low","message_id":"L027","chat_id":3,"simulated_user":"mercury","message_text":"gg easy","timestamp_offset":247,"ground_truth_buckets":[]},
-{"level":"low","message_id":"L028","chat_id":1,"simulated_user":"opal","message_text":"you're so trash 💀","timestamp_offset":263,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"low","message_id":"L029","chat_id":2,"simulated_user":"zen","message_text":"they deserve to be wiped out","timestamp_offset":275,"ground_truth_buckets":["hate_speech"]},
-{"level":"low","message_id":"L030","chat_id":3,"simulated_user":"sage","message_text":"nice clutch","timestamp_offset":289,"ground_truth_buckets":[]},
-
-{"level":"medium","message_id":"M001","chat_id":1,"simulated_user":"ghostRider","message_text":"gl team","timestamp_offset":3,"ground_truth_buckets":[]},
-{"level":"medium","message_id":"M002","chat_id":2,"simulated_user":"ironClaw","message_text":"your aim is garbage","timestamp_offset":9,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"medium","message_id":"M003","chat_id":3,"simulated_user":"cyberWolf","message_text":"stop acting like trash people 🤡","timestamp_offset":14,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"medium","message_id":"M004","chat_id":1,"simulated_user":"blaze","message_text":"that stream had explicit adult material","timestamp_offset":21,"ground_truth_buckets":["sexual_explicit"]},
-{"level":"medium","message_id":"M006","chat_id":3,"simulated_user":"vandal","message_text":"this entire team should disappear","timestamp_offset":35,"ground_truth_buckets":["hate_speech"]},
-{"level":"medium","message_id":"M007","chat_id":1,"simulated_user":"titan","message_text":"you are trash 🤡","timestamp_offset":49,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"medium","message_id":"M009","chat_id":3,"simulated_user":"rift","message_text":"she keeps posting explicit stuff","timestamp_offset":63,"ground_truth_buckets":["sexual_explicit"]},
-{"level":"medium","message_id":"M010","chat_id":1,"simulated_user":"onyx","message_text":"you guys are pathetic losers","timestamp_offset":72,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"medium","message_id":"M012","chat_id":3,"simulated_user":"havoc","message_text":"go back to where you belong","timestamp_offset":94,"ground_truth_buckets":["racial_ethnic"]},
-{"level":"medium","message_id":"M014","chat_id":2,"simulated_user":"echoByte","message_text":"spam those stupid emojis 💀💀","timestamp_offset":118,"ground_truth_buckets":["emoji_abuse"]},
-{"level":"medium","message_id":"M017","chat_id":2,"simulated_user":"omega","message_text":"this is explicit nonsense","timestamp_offset":151,"ground_truth_buckets":["sexual_explicit"]},
-{"level":"medium","message_id":"M018","chat_id":3,"simulated_user":"zenX","message_text":"you clowns 🤡🤡","timestamp_offset":166,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"medium","message_id":"M019","chat_id":1,"simulated_user":"nexus","message_text":"they should all vanish forever","timestamp_offset":177,"ground_truth_buckets":["hate_speech"]},
-{"level":"medium","message_id":"M021","chat_id":3,"simulated_user":"draco","message_text":"you useless idiot","timestamp_offset":201,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"medium","message_id":"M026","chat_id":2,"simulated_user":"raze","message_text":"these players deserve to be erased","timestamp_offset":259,"ground_truth_buckets":["hate_speech"]},
-
-{"level":"high","message_id":"H002","chat_id":2,"simulated_user":"toxicByte","message_text":"you absolute garbage human 🤡","timestamp_offset":8,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"high","message_id":"H004","chat_id":1,"simulated_user":"grimShade","message_text":"this whole team deserves to be wiped out","timestamp_offset":22,"ground_truth_buckets":["hate_speech"]},
-{"level":"high","message_id":"H005","chat_id":2,"simulated_user":"arcX","message_text":"stop posting that explicit garbage","timestamp_offset":29,"ground_truth_buckets":["sexual_explicit","harassment_bullying"]},
-{"level":"high","message_id":"H007","chat_id":1,"simulated_user":"pixelVoid","message_text":"go back to wherever you came from","timestamp_offset":44,"ground_truth_buckets":["racial_ethnic"]},
-{"level":"high","message_id":"H009","chat_id":3,"simulated_user":"rageQuit","message_text":"sharing explicit clips again 🤢","timestamp_offset":60,"ground_truth_buckets":["sexual_explicit","emoji_abuse"]},
-{"level":"high","message_id":"H010","chat_id":1,"simulated_user":"driftX","message_text":"you are pathetic losers","timestamp_offset":73,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"high","message_id":"H012","chat_id":3,"simulated_user":"igniteX","message_text":"why are these idiots even allowed here","timestamp_offset":97,"ground_truth_buckets":["harassment_bullying"]},
-{"level":"high","message_id":"H013","chat_id":1,"simulated_user":"storm","message_text":"spam those stupid emojis 💀💀💀","timestamp_offset":110,"ground_truth_buckets":["emoji_abuse","harassment_bullying"]},
-{"level":"high","message_id":"H015","chat_id":3,"simulated_user":"flareX","message_text":"you deserve nothing but misery","timestamp_offset":132,"ground_truth_buckets":["hate_speech"]},
-{"level":"high","message_id":"H017","chat_id":2,"simulated_user":"toxin","message_text":"imagine being this trash 🤡","timestamp_offset":166,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"high","message_id":"H019","chat_id":1,"simulated_user":"shadowCore","message_text":"they should all be erased permanently","timestamp_offset":193,"ground_truth_buckets":["hate_speech"]},
-{"level":"high","message_id":"H021","chat_id":3,"simulated_user":"glitchX","message_text":"posting explicit junk again?","timestamp_offset":219,"ground_truth_buckets":["sexual_explicit"]},
-{"level":"high","message_id":"H022","chat_id":1,"simulated_user":"cypherX","message_text":"you are literally trash 💀","timestamp_offset":233,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]},
-{"level":"high","message_id":"H024","chat_id":3,"simulated_user":"omegaX","message_text":"these people are pathetic scum","timestamp_offset":259,"ground_truth_buckets":["hate_speech"]},
-{"level":"high","message_id":"H025","chat_id":1,"simulated_user":"arcStorm","message_text":"stop acting like clowns 🤡","timestamp_offset":274,"ground_truth_buckets":["harassment_bullying","emoji_abuse"]}
+  {
+    "message_id": "L3001",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "xDeltaForce",
+    "message_text": "flash first, then push the corner",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 3
+  },
+  {
+    "message_id": "L2001",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "Vortex_K",
+    "message_text": "flash first, then push the corner",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 8
+  },
+  {
+    "message_id": "L1001",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "GamerX99",
+    "message_text": "gg wp, see you next round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 9
+  },
+  {
+    "message_id": "L3002",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "MoonRabbit",
+    "message_text": "need two more for a full squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 12
+  },
+  {
+    "message_id": "L1002",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "ShadowStrike",
+    "message_text": "keep feeding and I'll get you reported and banned",
+    "ground_truth_buckets": [
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 76
+  },
+  {
+    "message_id": "L2002",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "SnipeQueen",
+    "message_text": "you pathetic losers should all just leave",
+    "ground_truth_buckets": [
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 167
+  },
+  {
+    "message_id": "L2003",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "RazerEdge",
+    "message_text": "lag spiked, sorry about that",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 19
+  },
+  {
+    "message_id": "L3003",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "GlitchHunter",
+    "message_text": "you're a complete waste of a slot on this team",
+    "ground_truth_buckets": [
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 151
+  },
+  {
+    "message_id": "L1003",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "LunaWolf",
+    "message_text": "they deserve to be wiped out, all of them",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 158
+  },
+  {
+    "message_id": "L1004",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "NeonRider",
+    "message_text": "how did that not kill him??",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 29
+  },
+  {
+    "message_id": "L2004",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "CryptoFrag",
+    "message_text": "back, what did I miss",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 31
+  },
+  {
+    "message_id": "L3004",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "TurboNova",
+    "message_text": "this whole group deserves nothing but suffering",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 122
+  },
+  {
+    "message_id": "L1005",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "CoolBreeze",
+    "message_text": "the event skin is actually worth getting",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 36
+  },
+  {
+    "message_id": "L2005",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "NightOwl99",
+    "message_text": "ngl season 4 is actually good",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 41
+  },
+  {
+    "message_id": "L3005",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "FrostByteX",
+    "message_text": "the audio cues in this patch are great",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 42
+  },
+  {
+    "message_id": "L1006",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "ThunderBolt",
+    "message_text": "smoke the doorway, I'll rush after",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 47
+  },
+  {
+    "message_id": "L3006",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "CodeBreaker",
+    "message_text": "just hit a personal record, let's go",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 48
+  },
+  {
+    "message_id": "L2006",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "BlastRadius",
+    "message_text": "this entire team should vanish, every one of them",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 32
+  },
+  {
+    "message_id": "L2007",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "SilentBob",
+    "message_text": "adding everyone here, got explicit content to share \ud83d\ude09",
+    "ground_truth_buckets": [
+      "sexual_explicit"
+    ],
+    "timestamp_offset": 25
+  },
+  {
+    "message_id": "L1007",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "StarDust",
+    "message_text": "go back to your country, we don't want your kind here",
+    "ground_truth_buckets": [
+      "racial_ethnic"
+    ],
+    "timestamp_offset": 51
+  },
+  {
+    "message_id": "L3007",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "LazerWolf",
+    "message_text": "that was my bad, I'll do better",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 57
+  },
+  {
+    "message_id": "L1008",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "IronFist",
+    "message_text": "okay that was actually clean though",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 64
+  },
+  {
+    "message_id": "L2008",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "HyperDrive",
+    "message_text": "rotating to C, watch the spawn",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 65
+  },
+  {
+    "message_id": "L3008",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "StormChaser",
+    "message_text": "gg everyone, great match!",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 66
+  },
+  {
+    "message_id": "L2009",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "AceOfSpades",
+    "message_text": "\ud83d\udca6\ud83c\udf51\ud83c\udf46 add me on discord, got content for you",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 65
+  },
+  {
+    "message_id": "L1009",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "PixelKing",
+    "message_text": "there's a shortcut through the warehouse fyi",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 78
+  },
+  {
+    "message_id": "L3009",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "IronClad99",
+    "message_text": "rematch? one more round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 79
+  },
+  {
+    "message_id": "L2010",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "ChaosMaker",
+    "message_text": "just hit a personal record, let's go",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 85
+  },
+  {
+    "message_id": "L1010",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "DarkMatter",
+    "message_text": "finally hit diamond, took long enough \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 87
+  },
+  {
+    "message_id": "L3010",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "DuskRaider",
+    "message_text": "lag spiked, sorry about that",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 88
+  },
+  {
+    "message_id": "L1011",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "GamerX99",
+    "message_text": "that 1v3 was disgusting, well played",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 92
+  },
+  {
+    "message_id": "L2011",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "Vortex_K",
+    "message_text": "hotfix just dropped, restart your game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 93
+  },
+  {
+    "message_id": "L3011",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "xDeltaForce",
+    "message_text": "hit me up for the uncensored stuff, free for server members",
+    "ground_truth_buckets": [
+      "sexual_explicit"
+    ],
+    "timestamp_offset": 39
+  },
+  {
+    "message_id": "L1012",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "ShadowStrike",
+    "message_text": "anyone run the new controller layout?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 103
+  },
+  {
+    "message_id": "L2012",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "SnipeQueen",
+    "message_text": "dropping ammo at spawn, come grab it",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 104
+  },
+  {
+    "message_id": "L3012",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "MoonRabbit",
+    "message_text": "\ud83c\udf46\ud83d\udca6 add me ladies, DM open",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 79
+  },
+  {
+    "message_id": "L1013",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "LunaWolf",
+    "message_text": "the audio cues in this patch are great",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 110
+  },
+  {
+    "message_id": "L2013",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "RazerEdge",
+    "message_text": "need two more for a full squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 111
+  },
+  {
+    "message_id": "L3013",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "GlitchHunter",
+    "message_text": "wp all, close game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 112
+  },
+  {
+    "message_id": "L3014",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "TurboNova",
+    "message_text": "new map is growing on me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 117
+  },
+  {
+    "message_id": "L2014",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "CryptoFrag",
+    "message_text": "full save this round, we can't afford more",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 118
+  },
+  {
+    "message_id": "L1014",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "NeonRider",
+    "message_text": "\ud83c\udf46\ud83c\udf51\ud83d\udc45 send me your discord if you know what I mean",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 136
+  },
+  {
+    "message_id": "L1015",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "CoolBreeze",
+    "message_text": "pushing mid, need someone on A",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 128
+  },
+  {
+    "message_id": "L2015",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "NightOwl99",
+    "message_text": "they nerfed my favourite gun again \ud83d\ude2d",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 129
+  },
+  {
+    "message_id": "L3015",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "FrostByteX",
+    "message_text": "wait for the bomb plant, then we retake",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 130
+  },
+  {
+    "message_id": "L1016",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "ThunderBolt",
+    "message_text": "\ud83c\udf0d\u2708\ufe0f go back already, this server isn't for you",
+    "ground_truth_buckets": [
+      "racial_ethnic",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 94
+  },
+  {
+    "message_id": "L3016",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "CodeBreaker",
+    "message_text": "\ud83c\udf51\ud83c\udf52\ud83d\udca6 who wants it, you know where to find me",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 54
+  },
+  {
+    "message_id": "L2016",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "BlastRadius",
+    "message_text": "\ud83c\udf0d\u2708\ufe0f go back, your kind ruins every server",
+    "ground_truth_buckets": [
+      "racial_ethnic",
+      "emoji_abuse",
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 102
+  },
+  {
+    "message_id": "L1017",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "StarDust",
+    "message_text": "gg everyone, great match!",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 145
+  },
+  {
+    "message_id": "L2017",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "SilentBob",
+    "message_text": "that was my bad, I'll do better",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 148
+  },
+  {
+    "message_id": "L3017",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "LazerWolf",
+    "message_text": "nice shot there \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 149
+  },
+  {
+    "message_id": "L2018",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "HyperDrive",
+    "message_text": "this weapon feels way stronger now",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 153
+  },
+  {
+    "message_id": "L3018",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "StormChaser",
+    "message_text": "anyone know when ranked resets?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 155
+  },
+  {
+    "message_id": "L1018",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "IronFist",
+    "message_text": "back, what did I miss",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 156
+  },
+  {
+    "message_id": "L3019",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "IronClad99",
+    "message_text": "friendly reminder to stay hydrated \ud83d\udca7",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 161
+  },
+  {
+    "message_id": "L1019",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "PixelKing",
+    "message_text": "shoutout to whoever anchored B all game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 163
+  },
+  {
+    "message_id": "L2019",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "AceOfSpades",
+    "message_text": "shoutout to whoever anchored B all game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 168
+  },
+  {
+    "message_id": "L3020",
+    "chat_id": 3,
+    "level": "low",
+    "simulated_user": "DuskRaider",
+    "message_text": "dropping ammo at spawn, come grab it",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 172
+  },
+  {
+    "message_id": "L1020",
+    "chat_id": 1,
+    "level": "low",
+    "simulated_user": "DarkMatter",
+    "message_text": "nice shot there \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 174
+  },
+  {
+    "message_id": "L2020",
+    "chat_id": 2,
+    "level": "low",
+    "simulated_user": "ChaosMaker",
+    "message_text": "gg both teams, that was competitive",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 175
+  },
+  {
+    "message_id": "M3001",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "PixelPusher",
+    "message_text": "why are these idiots even allowed in this server",
+    "ground_truth_buckets": [
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 151
+  },
+  {
+    "message_id": "M2001",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "FragKing_",
+    "message_text": "anyone know when ranked resets?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 7
+  },
+  {
+    "message_id": "M3002",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "DarkSyndrome",
+    "message_text": "lol that nade was perfectly timed",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 8
+  },
+  {
+    "message_id": "M1001",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "xX_SlayR_Xx",
+    "message_text": "ngl season 4 is actually good",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 9
+  },
+  {
+    "message_id": "M2002",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "ZeroLatency",
+    "message_text": "server is running smooth tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 10
+  },
+  {
+    "message_id": "M1002",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "NoScope420",
+    "message_text": "your aim is garbage, just uninstall already",
+    "ground_truth_buckets": [
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 133
+  },
+  {
+    "message_id": "M1003",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "QuickDraw",
+    "message_text": "check the dev blog, they addressed the lag",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 14
+  },
+  {
+    "message_id": "M2003",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "NoscoperPro",
+    "message_text": "the audio cues in this patch are great",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 15
+  },
+  {
+    "message_id": "M3003",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "NightSlayer",
+    "message_text": "this entire team should vanish, every one of them",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 11
+  },
+  {
+    "message_id": "M2004",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "BulletDodge",
+    "message_text": "new patch notes dropped, worth reading",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 19
+  },
+  {
+    "message_id": "M3004",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "FuryByte",
+    "message_text": "hotfix just dropped, restart your game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 20
+  },
+  {
+    "message_id": "M1004",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "T0xicVibes",
+    "message_text": "people like that shouldn't be allowed to exist in any server",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 136
+  },
+  {
+    "message_id": "M2005",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "SpeedDemon7",
+    "message_text": "gg wp, see you next round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 27
+  },
+  {
+    "message_id": "M1005",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "GrindMode",
+    "message_text": "dropped back to plat, this grind is rough \ud83d\ude2d",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 28
+  },
+  {
+    "message_id": "M3005",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "TurboFrag99",
+    "message_text": "anyone run the new controller layout?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 29
+  },
+  {
+    "message_id": "M2006",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "CampKiller",
+    "message_text": "you pathetic losers should all just leave",
+    "ground_truth_buckets": [
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 24
+  },
+  {
+    "message_id": "M3006",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "GhostRunner",
+    "message_text": "taking the long route, cover me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 33
+  },
+  {
+    "message_id": "M1006",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "ClutchGod",
+    "message_text": "gg wp, see you next round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 34
+  },
+  {
+    "message_id": "M2007",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "HeadshotHQ",
+    "message_text": "they deserve to be wiped out, all of them",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 31
+  },
+  {
+    "message_id": "M3007",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "CodeRed__",
+    "message_text": "dropped back to plat, this grind is rough \ud83d\ude2d",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 39
+  },
+  {
+    "message_id": "M1007",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "l33tHax0r",
+    "message_text": "there's a shortcut through the warehouse fyi",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 38
+  },
+  {
+    "message_id": "M2008",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "WarFoxTrot",
+    "message_text": "there's a shortcut through the warehouse fyi",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 43
+  },
+  {
+    "message_id": "M3008",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "VoidWalker",
+    "message_text": "I'm dead \ud83d\ude2d how did I miss that",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 44
+  },
+  {
+    "message_id": "M1008",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "SweaTy_Palms",
+    "message_text": "okay that was actually clean though",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 45
+  },
+  {
+    "message_id": "M1009",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "Lagmaster",
+    "message_text": "double xp weekend let's gooo \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 49
+  },
+  {
+    "message_id": "M3009",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "StormBringer",
+    "message_text": "the audio cues in this patch are great",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 50
+  },
+  {
+    "message_id": "M2009",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "LagSurfer",
+    "message_text": "clutch incoming, everyone stay quiet",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 51
+  },
+  {
+    "message_id": "M1010",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "AFK_Always",
+    "message_text": "anyone on EU servers tonight?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 55
+  },
+  {
+    "message_id": "M3010",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "CrashTest",
+    "message_text": "same time next week?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 57
+  },
+  {
+    "message_id": "M2010",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "CriticalX",
+    "message_text": "report that guy, he's griefing spawn",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 56
+  },
+  {
+    "message_id": "M2011",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "FragKing_",
+    "message_text": "ping is rough on my end",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 63
+  },
+  {
+    "message_id": "M3011",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "PixelPusher",
+    "message_text": "DM me for the real stuff, I've got videos",
+    "ground_truth_buckets": [
+      "sexual_explicit"
+    ],
+    "timestamp_offset": 141
+  },
+  {
+    "message_id": "M1011",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "xX_SlayR_Xx",
+    "message_text": "players from your region don't belong on this server",
+    "ground_truth_buckets": [
+      "racial_ethnic"
+    ],
+    "timestamp_offset": 57
+  },
+  {
+    "message_id": "M1012",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "NoScope420",
+    "message_text": "rematch? one more round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 68
+  },
+  {
+    "message_id": "M2012",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "ZeroLatency",
+    "message_text": "adding everyone here, got explicit content to share \ud83d\ude09",
+    "ground_truth_buckets": [
+      "sexual_explicit"
+    ],
+    "timestamp_offset": 132
+  },
+  {
+    "message_id": "M3012",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "DarkSyndrome",
+    "message_text": "ping is rough on my end",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 70
+  },
+  {
+    "message_id": "M2013",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "NoscoperPro",
+    "message_text": "check the dev blog, they addressed the lag",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 72
+  },
+  {
+    "message_id": "M1013",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "QuickDraw",
+    "message_text": "this team actually has good comms tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 74
+  },
+  {
+    "message_id": "M3013",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "NightSlayer",
+    "message_text": "wait for the bomb plant, then we retake",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 75
+  },
+  {
+    "message_id": "M3014",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "FuryByte",
+    "message_text": "this team actually has good comms tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 79
+  },
+  {
+    "message_id": "M2014",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "BulletDodge",
+    "message_text": "\ud83c\udf46\ud83d\udca6 DM me if you're around tonight",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 77
+  },
+  {
+    "message_id": "M1014",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "T0xicVibes",
+    "message_text": "anyone run the new controller layout?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 81
+  },
+  {
+    "message_id": "M1015",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "GrindMode",
+    "message_text": "dropping ammo at spawn, come grab it",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 84
+  },
+  {
+    "message_id": "M2015",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "SpeedDemon7",
+    "message_text": "tournament starts at 9, who's in?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 86
+  },
+  {
+    "message_id": "M3015",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "TurboFrag99",
+    "message_text": "flash first, then push the corner",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 87
+  },
+  {
+    "message_id": "M2016",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "CampKiller",
+    "message_text": "lol that nade was perfectly timed",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 90
+  },
+  {
+    "message_id": "M3016",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "GhostRunner",
+    "message_text": "smoke the doorway, I'll rush after",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 91
+  },
+  {
+    "message_id": "M1016",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "ClutchGod",
+    "message_text": "there's a bug at the south entrance fyi",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 92
+  },
+  {
+    "message_id": "M1017",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "l33tHax0r",
+    "message_text": "they're splitting A and B, rotate mid",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 97
+  },
+  {
+    "message_id": "M2017",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "HeadshotHQ",
+    "message_text": "I've got eyes on three, coming from east",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 98
+  },
+  {
+    "message_id": "M3017",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "CodeRed__",
+    "message_text": "\ud83c\udf3d\ud83c\udf3d check the link in my bio \ud83d\udc40",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 82
+  },
+  {
+    "message_id": "M2018",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "WarFoxTrot",
+    "message_text": "good vibes only in this lobby please",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 103
+  },
+  {
+    "message_id": "M1018",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "SweaTy_Palms",
+    "message_text": "reloading, hold the angle for me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 105
+  },
+  {
+    "message_id": "M3018",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "VoidWalker",
+    "message_text": "looking for one more for the squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 106
+  },
+  {
+    "message_id": "M3019",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "StormBringer",
+    "message_text": "new map is growing on me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 107
+  },
+  {
+    "message_id": "M1019",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "Lagmaster",
+    "message_text": "nice shot there \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 108
+  },
+  {
+    "message_id": "M2019",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "LagSurfer",
+    "message_text": "who's streaming tonight?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 109
+  },
+  {
+    "message_id": "M2020",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "CriticalX",
+    "message_text": "friendly reminder to stay hydrated \ud83d\udca7",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 115
+  },
+  {
+    "message_id": "M3020",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "CrashTest",
+    "message_text": "finally hit diamond, took long enough \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 116
+  },
+  {
+    "message_id": "M1020",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "AFK_Always",
+    "message_text": "two flanking B, fall back now",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 117
+  },
+  {
+    "message_id": "M1021",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "xX_SlayR_Xx",
+    "message_text": "they nerfed my favourite gun again \ud83d\ude2d",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 119
+  },
+  {
+    "message_id": "M2021",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "FragKing_",
+    "message_text": "that clutch was insane \ud83d\ude02",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 120
+  },
+  {
+    "message_id": "M3021",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "PixelPusher",
+    "message_text": "pushing mid, need someone on A",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 121
+  },
+  {
+    "message_id": "M1022",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "NoScope420",
+    "message_text": "\ud83c\udf51\ud83d\udc45\ud83d\udca6 ladies you know where to find me",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 75
+  },
+  {
+    "message_id": "M2022",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "ZeroLatency",
+    "message_text": "same time next week?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 127
+  },
+  {
+    "message_id": "M3022",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "DarkSyndrome",
+    "message_text": "rotating to C, watch the spawn",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 129
+  },
+  {
+    "message_id": "M2023",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "NoscoperPro",
+    "message_text": "wp all, close game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 133
+  },
+  {
+    "message_id": "M3023",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "NightSlayer",
+    "message_text": "need two more for a full squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 135
+  },
+  {
+    "message_id": "M1023",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "QuickDraw",
+    "message_text": "the audio cues in this patch are great",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 134
+  },
+  {
+    "message_id": "M2024",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "BulletDodge",
+    "message_text": "\ud83c\udf0d\u2708\ufe0f\ud83d\udeaa you know what that means, do it already",
+    "ground_truth_buckets": [
+      "racial_ethnic",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 85
+  },
+  {
+    "message_id": "M3024",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "FuryByte",
+    "message_text": "friendly reminder to stay hydrated \ud83d\udca7",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 141
+  },
+  {
+    "message_id": "M1024",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "T0xicVibes",
+    "message_text": "just reported him, hopefully mods act on it",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 140
+  },
+  {
+    "message_id": "M1025",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "GrindMode",
+    "message_text": "the event skin is actually worth getting",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 144
+  },
+  {
+    "message_id": "M2025",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "SpeedDemon7",
+    "message_text": "how did that not kill him??",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 145
+  },
+  {
+    "message_id": "M3025",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "TurboFrag99",
+    "message_text": "dropping ammo at spawn, come grab it",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 146
+  },
+  {
+    "message_id": "M1026",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "ClutchGod",
+    "message_text": "\ud83c\udf0d\u2708\ufe0f\ud83d\udeaa you already know what this means, just do it",
+    "ground_truth_buckets": [
+      "racial_ethnic",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 101
+  },
+  {
+    "message_id": "M2026",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "CampKiller",
+    "message_text": "that was my bad, I'll do better",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 150
+  },
+  {
+    "message_id": "M3026",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "GhostRunner",
+    "message_text": "full save this round, we can't afford more",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 152
+  },
+  {
+    "message_id": "M3027",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "CodeRed__",
+    "message_text": "\ud83c\udf3d\ud83c\udf3d new content just posted, check the link in bio \ud83d\udc40",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 5
+  },
+  {
+    "message_id": "M1027",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "l33tHax0r",
+    "message_text": "clutch or kick mentality only",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 158
+  },
+  {
+    "message_id": "M2027",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "HeadshotHQ",
+    "message_text": "smoke the doorway, I'll rush after",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 159
+  },
+  {
+    "message_id": "M1028",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "SweaTy_Palms",
+    "message_text": "pushing mid, need someone on A",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 162
+  },
+  {
+    "message_id": "M2028",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "WarFoxTrot",
+    "message_text": "brb grabbing water",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 164
+  },
+  {
+    "message_id": "M3028",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "VoidWalker",
+    "message_text": "wp all, close game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 165
+  },
+  {
+    "message_id": "M1029",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "Lagmaster",
+    "message_text": "report that guy, he's griefing spawn",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 169
+  },
+  {
+    "message_id": "M2029",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "LagSurfer",
+    "message_text": "looking for one more for the squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 170
+  },
+  {
+    "message_id": "M3029",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "StormBringer",
+    "message_text": "pro league finals are on tonight btw",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 171
+  },
+  {
+    "message_id": "M3030",
+    "chat_id": 3,
+    "level": "medium",
+    "simulated_user": "CrashTest",
+    "message_text": "server is running smooth tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 173
+  },
+  {
+    "message_id": "M1030",
+    "chat_id": 1,
+    "level": "medium",
+    "simulated_user": "AFK_Always",
+    "message_text": "lag spiked, sorry about that",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 175
+  },
+  {
+    "message_id": "M2030",
+    "chat_id": 2,
+    "level": "medium",
+    "simulated_user": "CriticalX",
+    "message_text": "anyone on EU servers tonight?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 176
+  },
+  {
+    "message_id": "H1002",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "EZ_CLAP",
+    "message_text": "server is running smooth tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 5
+  },
+  {
+    "message_id": "H1001",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "RAGE_QUIT_",
+    "message_text": "need backup at the objective NOW",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 7
+  },
+  {
+    "message_id": "H2002",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "PRO_RAGER",
+    "message_text": "smoke the doorway, I'll rush after",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 8
+  },
+  {
+    "message_id": "H3001",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DeadPixel__",
+    "message_text": "tournament starts at 9, who's in?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 10
+  },
+  {
+    "message_id": "H3002",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "GlitchMatrix",
+    "message_text": "these players deserve to be erased permanently",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 57
+  },
+  {
+    "message_id": "H1003",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "Boosted_AF",
+    "message_text": "gg everyone, great match!",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 9
+  },
+  {
+    "message_id": "H2001",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "xXMLGXx",
+    "message_text": "who's streaming tonight?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 10
+  },
+  {
+    "message_id": "H2003",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "GGEZ_lol",
+    "message_text": "they're splitting A and B, rotate mid",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 11
+  },
+  {
+    "message_id": "H3003",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "VoidStalker",
+    "message_text": "looking for one more for the squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 11
+  },
+  {
+    "message_id": "H1004",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrollFace2",
+    "message_text": "that clutch was insane \ud83d\ude02",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 14
+  },
+  {
+    "message_id": "H3004",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NightmareX_",
+    "message_text": "anyone on EU servers tonight?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 15
+  },
+  {
+    "message_id": "H2004",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "SaltMiner_",
+    "message_text": "ngl season 4 is actually good",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 16
+  },
+  {
+    "message_id": "H1005",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "HateBus99",
+    "message_text": "tournament starts at 9, who's in?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 19
+  },
+  {
+    "message_id": "H2005",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "KDRatio99",
+    "message_text": "nobody in this server wants you here, get out",
+    "ground_truth_buckets": [
+      "harassment_bullying"
+    ],
+    "timestamp_offset": 9
+  },
+  {
+    "message_id": "H3005",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "ChaosEngine",
+    "message_text": "they nerfed my favourite gun again \ud83d\ude2d",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 22
+  },
+  {
+    "message_id": "H2006",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "OneShot_God",
+    "message_text": "that clutch was insane \ud83d\ude02",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 23
+  },
+  {
+    "message_id": "H3006",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DarkFuryX",
+    "message_text": "friendly reminder to stay hydrated \ud83d\udca7",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 25
+  },
+  {
+    "message_id": "H1006",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "N00bSlayer",
+    "message_text": "smoke the doorway, I'll rush after",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 25
+  },
+  {
+    "message_id": "H1007",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "CRYbaby_",
+    "message_text": "good vibes only in this lobby please",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 27
+  },
+  {
+    "message_id": "H2007",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "FlameWar__",
+    "message_text": "good vibes only in this lobby please",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 28
+  },
+  {
+    "message_id": "H3007",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "HexBreaker",
+    "message_text": "clutch incoming, everyone stay quiet",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 29
+  },
+  {
+    "message_id": "H3008",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NullPointer",
+    "message_text": "lol that nade was perfectly timed",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 32
+  },
+  {
+    "message_id": "H1008",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "UNINSTALL",
+    "message_text": "who's streaming tonight?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 33
+  },
+  {
+    "message_id": "H2008",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "BanReq_",
+    "message_text": "reloading, hold the angle for me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 34
+  },
+  {
+    "message_id": "H2009",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "ToxicWaste9",
+    "message_text": "holding upper, anyone got a nade?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 37
+  },
+  {
+    "message_id": "H3009",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "CritMass99",
+    "message_text": "finally hit diamond, took long enough \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 39
+  },
+  {
+    "message_id": "H1009",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrashPanda",
+    "message_text": "friendly reminder to stay hydrated \ud83d\udca7",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 38
+  },
+  {
+    "message_id": "H1010",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TiltedAF",
+    "message_text": "ping is rough on my end",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 41
+  },
+  {
+    "message_id": "H2010",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "RageReport",
+    "message_text": "clutch or kick mentality only",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 42
+  },
+  {
+    "message_id": "H3010",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "EndgameX",
+    "message_text": "need two more for a full squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 43
+  },
+  {
+    "message_id": "H3011",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DeadPixel__",
+    "message_text": "that clutch was insane \ud83d\ude02",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 45
+  },
+  {
+    "message_id": "H1011",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "RAGE_QUIT_",
+    "message_text": "people like that shouldn't be allowed to exist in any server",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 153
+  },
+  {
+    "message_id": "H2011",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "xXMLGXx",
+    "message_text": "back, what did I miss",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 48
+  },
+  {
+    "message_id": "H2012",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "PRO_RAGER",
+    "message_text": "this whole group deserves nothing but suffering",
+    "ground_truth_buckets": [
+      "hate_speech"
+    ],
+    "timestamp_offset": 148
+  },
+  {
+    "message_id": "H1012",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "EZ_CLAP",
+    "message_text": "new map is growing on me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 51
+  },
+  {
+    "message_id": "H3012",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "GlitchMatrix",
+    "message_text": "the ranked system actually makes sense now",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 52
+  },
+  {
+    "message_id": "H1013",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "Boosted_AF",
+    "message_text": "let's keep comms clean this round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 54
+  },
+  {
+    "message_id": "H2013",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "GGEZ_lol",
+    "message_text": "anyone up for ranked after this?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 55
+  },
+  {
+    "message_id": "H3013",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "VoidStalker",
+    "message_text": "let's keep comms clean this round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 56
+  },
+  {
+    "message_id": "H2014",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "SaltMiner_",
+    "message_text": "pro league finals are on tonight btw",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 59
+  },
+  {
+    "message_id": "H3014",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NightmareX_",
+    "message_text": "the audio cues in this patch are great",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 61
+  },
+  {
+    "message_id": "H1014",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrollFace2",
+    "message_text": "calling it after this one, long day",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 60
+  },
+  {
+    "message_id": "H1015",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "HateBus99",
+    "message_text": "back, what did I miss",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 63
+  },
+  {
+    "message_id": "H2015",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "KDRatio99",
+    "message_text": "the ranked system actually makes sense now",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 64
+  },
+  {
+    "message_id": "H3015",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "ChaosEngine",
+    "message_text": "check the dev blog, they addressed the lag",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 65
+  },
+  {
+    "message_id": "H2016",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "OneShot_God",
+    "message_text": "that hitbox feels off this patch",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 68
+  },
+  {
+    "message_id": "H3016",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DarkFuryX",
+    "message_text": "pushing mid, need someone on A",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 70
+  },
+  {
+    "message_id": "H1016",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "N00bSlayer",
+    "message_text": "I've got eyes on three, coming from east",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 69
+  },
+  {
+    "message_id": "H3017",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "HexBreaker",
+    "message_text": "go back to your country, we don't want your kind here",
+    "ground_truth_buckets": [
+      "racial_ethnic"
+    ],
+    "timestamp_offset": 126
+  },
+  {
+    "message_id": "H2017",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "FlameWar__",
+    "message_text": "low health, need a heal before we push",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 73
+  },
+  {
+    "message_id": "H1017",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "CRYbaby_",
+    "message_text": "lol that nade was perfectly timed",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 74
+  },
+  {
+    "message_id": "H1018",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "UNINSTALL",
+    "message_text": "clutch or kick mentality only",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 76
+  },
+  {
+    "message_id": "H2018",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "BanReq_",
+    "message_text": "lol that nade was perfectly timed",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 77
+  },
+  {
+    "message_id": "H3018",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NullPointer",
+    "message_text": "need backup at the objective NOW",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 78
+  },
+  {
+    "message_id": "H1019",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrashPanda",
+    "message_text": "sniper on the roof, don't push",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 82
+  },
+  {
+    "message_id": "H2019",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "ToxicWaste9",
+    "message_text": "anyone run the new controller layout?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 83
+  },
+  {
+    "message_id": "H3019",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "CritMass99",
+    "message_text": "enemy spotted at bridge, 3 of them",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 84
+  },
+  {
+    "message_id": "H1020",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TiltedAF",
+    "message_text": "go back to where you came from, nobody wants you here",
+    "ground_truth_buckets": [
+      "racial_ethnic"
+    ],
+    "timestamp_offset": 21
+  },
+  {
+    "message_id": "H2020",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "RageReport",
+    "message_text": "this weapon feels way stronger now",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 86
+  },
+  {
+    "message_id": "H3020",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "EndgameX",
+    "message_text": "holding upper, anyone got a nade?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 87
+  },
+  {
+    "message_id": "H3021",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DeadPixel__",
+    "message_text": "gg wp, see you next round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 91
+  },
+  {
+    "message_id": "H1021",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "RAGE_QUIT_",
+    "message_text": "dropped back to plat, this grind is rough \ud83d\ude2d",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 92
+  },
+  {
+    "message_id": "H2021",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "xXMLGXx",
+    "message_text": "flash first, then push the corner",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 93
+  },
+  {
+    "message_id": "H1022",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "EZ_CLAP",
+    "message_text": "I post explicit content daily, check my profile",
+    "ground_truth_buckets": [
+      "sexual_explicit"
+    ],
+    "timestamp_offset": 83
+  },
+  {
+    "message_id": "H2022",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "PRO_RAGER",
+    "message_text": "your kind ruins every server they join, get out",
+    "ground_truth_buckets": [
+      "racial_ethnic"
+    ],
+    "timestamp_offset": 150
+  },
+  {
+    "message_id": "H3022",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "GlitchMatrix",
+    "message_text": "calling it after this one, long day",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 96
+  },
+  {
+    "message_id": "H1023",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "Boosted_AF",
+    "message_text": "gg both teams, that was competitive",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 99
+  },
+  {
+    "message_id": "H3023",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "VoidStalker",
+    "message_text": "good vibes only in this lobby please",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 102
+  },
+  {
+    "message_id": "H2023",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "GGEZ_lol",
+    "message_text": "clutch incoming, everyone stay quiet",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 101
+  },
+  {
+    "message_id": "H1024",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrollFace2",
+    "message_text": "they're splitting A and B, rotate mid",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 103
+  },
+  {
+    "message_id": "H3024",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NightmareX_",
+    "message_text": "the event skin is actually worth getting",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 104
+  },
+  {
+    "message_id": "H2024",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "SaltMiner_",
+    "message_text": "sniper on the roof, don't push",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 105
+  },
+  {
+    "message_id": "H2025",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "KDRatio99",
+    "message_text": "lag spiked, sorry about that",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 107
+  },
+  {
+    "message_id": "H3025",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "ChaosEngine",
+    "message_text": "gg both teams, that was competitive",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 108
+  },
+  {
+    "message_id": "H1025",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "HateBus99",
+    "message_text": "flash first, then push the corner",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 109
+  },
+  {
+    "message_id": "H1026",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "N00bSlayer",
+    "message_text": "pro league finals are on tonight btw",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 113
+  },
+  {
+    "message_id": "H3026",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DarkFuryX",
+    "message_text": "drop your discord if you want access to my content",
+    "ground_truth_buckets": [
+      "sexual_explicit"
+    ],
+    "timestamp_offset": 172
+  },
+  {
+    "message_id": "H2026",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "OneShot_God",
+    "message_text": "gg wp, see you next round",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 114
+  },
+  {
+    "message_id": "H1027",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "CRYbaby_",
+    "message_text": "how did that not kill him??",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 118
+  },
+  {
+    "message_id": "H2027",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "FlameWar__",
+    "message_text": "pushing mid, need someone on A",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 119
+  },
+  {
+    "message_id": "H3027",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "HexBreaker",
+    "message_text": "gg everyone, great match!",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 120
+  },
+  {
+    "message_id": "H1028",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "UNINSTALL",
+    "message_text": "hotfix just dropped, restart your game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 122
+  },
+  {
+    "message_id": "H2028",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "BanReq_",
+    "message_text": "there's a shortcut through the warehouse fyi",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 123
+  },
+  {
+    "message_id": "H3028",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NullPointer",
+    "message_text": "how did that not kill him??",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 124
+  },
+  {
+    "message_id": "H2029",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "ToxicWaste9",
+    "message_text": "new map is growing on me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 127
+  },
+  {
+    "message_id": "H3029",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "CritMass99",
+    "message_text": "that 1v3 was disgusting, well played",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 129
+  },
+  {
+    "message_id": "H1029",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrashPanda",
+    "message_text": "shoutout to whoever anchored B all game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 128
+  },
+  {
+    "message_id": "H2030",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "RageReport",
+    "message_text": "brb grabbing water",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 130
+  },
+  {
+    "message_id": "H1030",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TiltedAF",
+    "message_text": "this team actually has good comms tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 131
+  },
+  {
+    "message_id": "H3030",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "EndgameX",
+    "message_text": "queue up again, I'm ready",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 132
+  },
+  {
+    "message_id": "H2031",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "xXMLGXx",
+    "message_text": "\ud83c\udf69\ud83d\udca6 content dropping tonight, check the link",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 24
+  },
+  {
+    "message_id": "H1031",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "RAGE_QUIT_",
+    "message_text": "need two more for a full squad",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 136
+  },
+  {
+    "message_id": "H3031",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DeadPixel__",
+    "message_text": "\ud83c\udf53\ud83c\udf6f slide into my DMs tonight ladies",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 70
+  },
+  {
+    "message_id": "H3032",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "GlitchMatrix",
+    "message_text": "brb grabbing water",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 140
+  },
+  {
+    "message_id": "H1032",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "EZ_CLAP",
+    "message_text": "two flanking B, fall back now",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 141
+  },
+  {
+    "message_id": "H2032",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "PRO_RAGER",
+    "message_text": "that was my bad, I'll do better",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 142
+  },
+  {
+    "message_id": "H1033",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "Boosted_AF",
+    "message_text": "check the dev blog, they addressed the lag",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 144
+  },
+  {
+    "message_id": "H2033",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "GGEZ_lol",
+    "message_text": "shoutout to whoever anchored B all game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 145
+  },
+  {
+    "message_id": "H3033",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "VoidStalker",
+    "message_text": "anyone run the new controller layout?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 146
+  },
+  {
+    "message_id": "H3034",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NightmareX_",
+    "message_text": "that hitbox feels off this patch",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 149
+  },
+  {
+    "message_id": "H1034",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrollFace2",
+    "message_text": "finally hit diamond, took long enough \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 149
+  },
+  {
+    "message_id": "H2034",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "SaltMiner_",
+    "message_text": "this team actually has good comms tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 151
+  },
+  {
+    "message_id": "H3035",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "ChaosEngine",
+    "message_text": "server is running smooth tonight",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 152
+  },
+  {
+    "message_id": "H1035",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "HateBus99",
+    "message_text": "\ud83c\udf3d\ud83c\udf3d check my profile if you're curious \ud83d\udc40",
+    "ground_truth_buckets": [
+      "sexual_explicit",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 49
+  },
+  {
+    "message_id": "H2035",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "KDRatio99",
+    "message_text": "I'm dead \ud83d\ude2d how did I miss that",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 154
+  },
+  {
+    "message_id": "H3036",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "DarkFuryX",
+    "message_text": "full save this round, we can't afford more",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 157
+  },
+  {
+    "message_id": "H1036",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "N00bSlayer",
+    "message_text": "okay that was actually clean though",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 158
+  },
+  {
+    "message_id": "H2036",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "OneShot_God",
+    "message_text": "tournament starts at 9, who's in?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 159
+  },
+  {
+    "message_id": "H3037",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "HexBreaker",
+    "message_text": "\ud83d\uddd1\ufe0f\ud83d\udc65 that's all they are honestly",
+    "ground_truth_buckets": [
+      "hate_speech",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 79
+  },
+  {
+    "message_id": "H1037",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "CRYbaby_",
+    "message_text": "\ud83c\udf0d\u2708\ufe0f honestly just do it already \ud83d\ude42",
+    "ground_truth_buckets": [
+      "racial_ethnic",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 100
+  },
+  {
+    "message_id": "H2037",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "FlameWar__",
+    "message_text": "\ud83d\udeab\ud83c\udf0d this server isn't for your type",
+    "ground_truth_buckets": [
+      "racial_ethnic",
+      "emoji_abuse"
+    ],
+    "timestamp_offset": 67
+  },
+  {
+    "message_id": "H2038",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "BanReq_",
+    "message_text": "hotfix just dropped, restart your game",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 166
+  },
+  {
+    "message_id": "H1038",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "UNINSTALL",
+    "message_text": "nice shot there \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 167
+  },
+  {
+    "message_id": "H3038",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "NullPointer",
+    "message_text": "who's streaming tonight?",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 168
+  },
+  {
+    "message_id": "H2039",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "ToxicWaste9",
+    "message_text": "nice shot there \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 170
+  },
+  {
+    "message_id": "H1039",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TrashPanda",
+    "message_text": "taking the long route, cover me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 171
+  },
+  {
+    "message_id": "H3039",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "CritMass99",
+    "message_text": "rotating to C, watch the spawn",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 173
+  },
+  {
+    "message_id": "H1040",
+    "chat_id": 1,
+    "level": "high",
+    "simulated_user": "TiltedAF",
+    "message_text": "reloading, hold the angle for me",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 175
+  },
+  {
+    "message_id": "H2040",
+    "chat_id": 2,
+    "level": "high",
+    "simulated_user": "RageReport",
+    "message_text": "double xp weekend let's gooo \ud83d\udd25",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 176
+  },
+  {
+    "message_id": "H3040",
+    "chat_id": 3,
+    "level": "high",
+    "simulated_user": "EndgameX",
+    "message_text": "just hit a personal record, let's go",
+    "ground_truth_buckets": [],
+    "timestamp_offset": 177
+  }
 ]
