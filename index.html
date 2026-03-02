@@ -326,6 +326,7 @@ const SCORE_MISSED = -5;
 const SCORE_PERFECT_BONUS = 25;
 const FLAG_COOLDOWN = 500;
 const SESSION_DURATION_SECONDS = 180;
+const CLASSIFIER_OPEN_EVENT = 'modwatch_classifier_open';
 
 function scoringReducer(state, action) {
   switch(action.type) {
@@ -380,6 +381,11 @@ const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw3IBEc
 const MIN_IDENTIFIED_TO_UNLOCK = 10;
 const PROGRESS_STORAGE_KEY = 'modwatch_progress';
 const LOCAL_LEADERBOARD_KEY = 'modwatch_leaderboard';
+const PENDING_SUBMISSIONS_KEY = 'modwatch_pending_submissions';
+const REMOTE_LEADERBOARD_CACHE_KEY = 'modwatch_remote_leaderboard_cache';
+const REMOTE_LEADERBOARD_CACHE_TTL_MS = 5 * 60 * 1000;
+const SCORE_SYNC_RETRIES = 3;
+const SCORE_SYNC_RETRY_DELAY_MS = 1200;
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function formatTime(s) {
@@ -438,10 +444,46 @@ function sanitizeLeaderboardRow(row) {
     date: String(row?.date || toDateString()),
   };
 }
+function formatLeaderboardDate(value) {
+  const raw = String(value || '').trim();
+  if(!raw) return '';
+  const date = new Date(raw);
+  if(Number.isNaN(date.getTime())) return raw;
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = MONTHS[date.getMonth()] || '---';
+  const yyyy = date.getFullYear();
+  return `${mm} ${dd} ${yyyy}`;
+}
+function readAny(obj, keys, fallback = '') {
+  for(const key of keys) {
+    const value = obj?.[key];
+    if(value !== undefined && value !== null && String(value).trim() !== '') return value;
+  }
+  return fallback;
+}
+function normalizeInboundLeaderboardRow(row) {
+  if(Array.isArray(row)) {
+    return sanitizeLeaderboardRow({
+      name: row[0],
+      email: row[1],
+      score: row[2],
+      level: row[3],
+      date: row[4],
+    });
+  }
+  return sanitizeLeaderboardRow({
+    name: readAny(row, ['name', 'Name', 'player', 'player_name', 'username']),
+    email: readAny(row, ['email', 'Email', 'mail', 'user_email']),
+    score: readAny(row, ['score', 'Score', 'points', 'final_score']),
+    level: readAny(row, ['level', 'Level', 'difficulty'], 'low'),
+    date: readAny(row, ['date', 'Date', 'created_at', 'timestamp'], toDateString()),
+  });
+}
 function mergeLeaderboardRows(rows) {
   const byEmail = new Map();
   rows.forEach((row) => {
-    const clean = sanitizeLeaderboardRow(row);
+    const clean = normalizeInboundLeaderboardRow(row);
     if(!clean.email) return;
     const existing = byEmail.get(clean.email);
     if(!existing || clean.score > existing.score) byEmail.set(clean.email, clean);
@@ -454,6 +496,52 @@ function upsertLocalLeaderboard(row) {
   localStorage.setItem(LOCAL_LEADERBOARD_KEY, JSON.stringify(merged));
   return merged;
 }
+function getRemoteLeaderboardCache() {
+  try {
+    const payload = JSON.parse(localStorage.getItem(REMOTE_LEADERBOARD_CACHE_KEY) || '{}');
+    const rows = Array.isArray(payload?.rows) ? payload.rows : [];
+    const ts = Number(payload?.ts) || 0;
+    return { rows, ts };
+  } catch {
+    return { rows: [], ts: 0 };
+  }
+}
+function getFreshRemoteLeaderboardCache(maxAgeMs = REMOTE_LEADERBOARD_CACHE_TTL_MS) {
+  const cached = getRemoteLeaderboardCache();
+  if(!cached.rows.length || !cached.ts) return [];
+  if((Date.now() - cached.ts) > maxAgeMs) return [];
+  return cached.rows;
+}
+function setRemoteLeaderboardCache(rows) {
+  const safeRows = Array.isArray(rows) ? rows : [];
+  localStorage.setItem(REMOTE_LEADERBOARD_CACHE_KEY, JSON.stringify({ rows: safeRows, ts: Date.now() }));
+}
+function getPendingSubmissions() {
+  try { return JSON.parse(localStorage.getItem(PENDING_SUBMISSIONS_KEY) || '[]'); }
+  catch { return []; }
+}
+function setPendingSubmissions(rows) {
+  localStorage.setItem(PENDING_SUBMISSIONS_KEY, JSON.stringify(Array.isArray(rows) ? rows : []));
+}
+function getSubmissionRowKey(row) {
+  const clean = sanitizeLeaderboardRow(row);
+  return [clean.email, clean.level, clean.score, clean.date].join('|');
+}
+function queuePendingSubmission(row) {
+  const clean = sanitizeLeaderboardRow(row);
+  if(!clean.email) return;
+  const pending = getPendingSubmissions();
+  const key = getSubmissionRowKey(clean);
+  if(!pending.some(existing => getSubmissionRowKey(existing) === key)) {
+    pending.push(clean);
+    setPendingSubmissions(pending);
+  }
+}
+function removePendingSubmission(row) {
+  const key = getSubmissionRowKey(row);
+  const next = getPendingSubmissions().filter(existing => getSubmissionRowKey(existing) !== key);
+  setPendingSubmissions(next);
+}
 function postLeaderboardNoCors(row) {
   if(!APPS_SCRIPT_WEB_APP_URL) return Promise.resolve(false);
   return fetch(APPS_SCRIPT_WEB_APP_URL, {
@@ -462,6 +550,41 @@ function postLeaderboardNoCors(row) {
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ action: 'add', row: sanitizeLeaderboardRow(row) }),
   }).then(() => true).catch(() => false);
+}
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function postLeaderboardWithRetry(row, maxAttempts = SCORE_SYNC_RETRIES) {
+  for(let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const ok = await postLeaderboardNoCors(row);
+    if(ok) return true;
+    if(attempt < maxAttempts) await wait(SCORE_SYNC_RETRY_DELAY_MS * attempt);
+  }
+  return false;
+}
+async function submitLeaderboardRow(row) {
+  const clean = sanitizeLeaderboardRow(row);
+  if(!clean.email) return false;
+  queuePendingSubmission(clean);
+  const ok = await postLeaderboardWithRetry(clean);
+  if(ok) removePendingSubmission(clean);
+  return ok;
+}
+async function flushPendingSubmissions() {
+  const pending = getPendingSubmissions();
+  for(const row of pending) {
+    const ok = await postLeaderboardWithRetry(row);
+    if(ok) removePendingSubmission(row);
+  }
+  return getPendingSubmissions().length;
+}
+function extractRowsFromPayload(payload) {
+  if(Array.isArray(payload)) return payload;
+  if(Array.isArray(payload?.rows)) return payload.rows;
+  if(Array.isArray(payload?.data)) return payload.data;
+  if(Array.isArray(payload?.values)) return payload.values;
+  if(Array.isArray(payload?.result)) return payload.result;
+  return [];
 }
 function fetchLeaderboardJsonp(limit = 100) {
   if(!APPS_SCRIPT_WEB_APP_URL) return Promise.resolve([]);
@@ -474,21 +597,43 @@ function fetchLeaderboardJsonp(limit = 100) {
     };
     window[callback] = (payload) => {
       cleanup();
-      resolve(Array.isArray(payload?.rows) ? payload.rows : []);
+      resolve(extractRowsFromPayload(payload));
     };
     script.onerror = () => {
       cleanup();
       reject(new Error('Failed to load leaderboard JSONP'));
     };
-    script.src = `${APPS_SCRIPT_WEB_APP_URL}?action=list&limit=${encodeURIComponent(limit)}&callback=${encodeURIComponent(callback)}`;
+    script.src = `${APPS_SCRIPT_WEB_APP_URL}?action=list&limit=${encodeURIComponent(limit)}&callback=${encodeURIComponent(callback)}&jsonp=${encodeURIComponent(callback)}`;
     document.body.appendChild(script);
   });
+}
+async function fetchLeaderboardRows(limit = 100) {
+  if(!APPS_SCRIPT_WEB_APP_URL) return [];
+  const url = `${APPS_SCRIPT_WEB_APP_URL}?action=list&limit=${encodeURIComponent(limit)}`;
+  try {
+    const res = await fetch(url, { method:'GET' });
+    if(res.ok) {
+      const text = await res.text();
+      if(text) {
+        try {
+          return extractRowsFromPayload(JSON.parse(text));
+        } catch(_) {
+          const callbackMatch = text.match(/^[\w$]+\(([\s\S]*)\)\s*;?\s*$/);
+          if(callbackMatch?.[1]) {
+            try { return extractRowsFromPayload(JSON.parse(callbackMatch[1])); }
+            catch(_) {}
+          }
+        }
+      }
+    }
+  } catch(_) {}
+  return fetchLeaderboardJsonp(limit);
 }
 
 // ─── COMPONENTS ───────────────────────────────────────────────────────────────
 
 // Start Screen
-function StartScreen({ onStart }) {
+function StartScreen({ onStart, onViewLeaderboard }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [nameErr, setNameErr] = useState('');
@@ -587,9 +732,14 @@ function StartScreen({ onStart }) {
               </div>
             </div>
 
-            <button className="btn-primary" onClick={handleStart} style={{width:'100%',justifyContent:'center',fontSize:14,padding:'14px'}}>
-              Enter Training →
-            </button>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <button className="btn-primary" onClick={handleStart} style={{width:'100%',justifyContent:'center',fontSize:14,padding:'14px'}}>
+                Enter Training →
+              </button>
+              <button className="btn-secondary" onClick={onViewLeaderboard} style={{width:'100%',justifyContent:'center',fontSize:14,padding:'14px'}}>
+                Leaderboard
+              </button>
+            </div>
           </div>
         </div>
 
@@ -837,9 +987,19 @@ function MessageItem({ msg, users, flaggedInfo, onFlag, isLocked }) {
   const [panelPos, setPanelPos] = useState(null);
   const user = users[msg.user % users.length];
 
+  useEffect(() => {
+    const handleClassifierOpen = (e) => {
+      const openedMessageId = e?.detail?.messageId;
+      if(openedMessageId !== msg.id) setPanelPos(null);
+    };
+    window.addEventListener(CLASSIFIER_OPEN_EVENT, handleClassifierOpen);
+    return () => window.removeEventListener(CLASSIFIER_OPEN_EVENT, handleClassifierOpen);
+  }, [msg.id]);
+
   const handleClick = (e) => {
     if(flaggedInfo || isLocked) return;
     e.stopPropagation();
+    window.dispatchEvent(new CustomEvent(CLASSIFIER_OPEN_EVENT, { detail: { messageId: msg.id } }));
     const rect = e.currentTarget.getBoundingClientRect();
     setPanelPos({ x: rect.left + 20, y: rect.bottom + 8 });
   };
@@ -1234,7 +1394,7 @@ function GameSession({ level, player, dataset, onEnd }) {
 }
 
 // Summary Screen
-function SummaryScreen({ results, player, level, onRetry, onLeaderboard }) {
+function SummaryScreen({ results, player, level, onRetry, onLeaderboard, submissionStatus }) {
   const { score, correctFlags, incorrectFlags, missedCount, missedPenalty, perfectBonus, totalViolations, flagged, allMessages, earlyCompletion } = results;
   const summaryUsers = results.allUsers?.length ? results.allUsers : USERS[level];
   const accuracy = getAccuracy(correctFlags, correctFlags + incorrectFlags);
@@ -1265,6 +1425,18 @@ function SummaryScreen({ results, player, level, onRetry, onLeaderboard }) {
             {score >= 150 ? 'Outstanding' : score >= 80 ? 'Good Work' : score >= 0 ? 'Keep Practicing' : 'Rough Session'}
           </h2>
           <p style={{color:'var(--text-muted)',fontSize:14}}>{player.name} · {level.toUpperCase()} difficulty</p>
+          {submissionStatus && (
+            <p style={{
+              marginTop:8,fontSize:12,fontFamily:'var(--font-mono)',
+              color: submissionStatus === 'success' ? '#10b981' : submissionStatus === 'syncing' ? 'var(--accent)' : '#ef4444'
+            }}>
+              {submissionStatus === 'syncing'
+                ? 'Syncing score to Google Sheets...'
+                : submissionStatus === 'success'
+                  ? 'Score synced to Google Sheets'
+                  : 'Could not sync now. It will retry automatically.'}
+            </p>
+          )}
         </div>
 
         {/* Score card */}
@@ -1417,7 +1589,7 @@ function SummaryScreen({ results, player, level, onRetry, onLeaderboard }) {
 
         {/* Actions */}
         <div style={{display:'flex',gap:16,justifyContent:'center'}}>
-          <button className="btn-secondary" onClick={onRetry}>← Try Again</button>
+          <button className="btn-secondary" onClick={onRetry}>← Home Page</button>
           <button className="btn-primary" onClick={onLeaderboard}>View Leaderboard →</button>
         </div>
       </div>
@@ -1433,14 +1605,20 @@ function LeaderboardScreen({ player, onBack }) {
     let active = true;
     const load = async () => {
       const localRows = JSON.parse(localStorage.getItem(LOCAL_LEADERBOARD_KEY) || '[]');
+      const cachedRemoteRows = getFreshRemoteLeaderboardCache();
+      if(active && cachedRemoteRows.length) {
+        const quickCombined = mergeLeaderboardRows([...localRows, ...cachedRemoteRows]).slice(0, 15);
+        setEntries(quickCombined);
+      }
       let remoteRows = [];
       try {
-        remoteRows = await fetchLeaderboardJsonp(200);
+        remoteRows = await fetchLeaderboardRows(200);
+        if(remoteRows.length) setRemoteLeaderboardCache(remoteRows);
       } catch(err) {
         console.warn('Leaderboard fetch fallback to local only:', err);
       }
       if(!active) return;
-      const combined = mergeLeaderboardRows([...localRows, ...remoteRows]).slice(0, 15);
+      const combined = mergeLeaderboardRows([...localRows, ...(remoteRows.length ? remoteRows : cachedRemoteRows)]).slice(0, 15);
       setEntries(combined);
     };
     load();
@@ -1501,7 +1679,7 @@ function LeaderboardScreen({ player, onBack }) {
                     color: e.level==='high' ? '#ef4444' : e.level==='medium' ? '#f59e0b' : '#10b981',
                   }}>{e.level}</span>
                 </div>
-                <div style={{textAlign:'center',fontSize:12,color:'var(--text-muted)',display:'flex',alignItems:'center',justifyContent:'center'}}>{e.date}</div>
+                <div style={{textAlign:'center',fontSize:12,color:'var(--text-muted)',display:'flex',alignItems:'center',justifyContent:'center'}}>{formatLeaderboardDate(e.date)}</div>
               </div>
             );
           })}
@@ -1523,6 +1701,7 @@ function App() {
   const [results, setResults] = useState(null);
   const [datasets, setDatasets] = useState(DATASETS);
   const [unlockState, setUnlockState] = useState(getUnlockState(''));
+  const [submissionStatus, setSubmissionStatus] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -1542,10 +1721,28 @@ function App() {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    flushPendingSubmissions().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetchLeaderboardRows(200)
+      .then(rows => {
+        if(active && Array.isArray(rows) && rows.length) setRemoteLeaderboardCache(rows);
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   const handleStart = (p) => {
     setPlayer(p);
     setUnlockState(getUnlockState(p.email));
     setScreen('levels');
+  };
+  const handleViewLeaderboardFromStart = () => {
+    if(!player) setPlayer({ name:'Guest', email:'' });
+    setScreen('leaderboard');
   };
   const handleSelectLevel = (l) => {
     const currentUnlock = getUnlockState(player?.email);
@@ -1554,7 +1751,7 @@ function App() {
     setLevel(l);
     setScreen('game');
   };
-  const handleEnd = (r) => {
+  const handleEnd = async (r) => {
     const current = getUserProgress(player?.email);
     const correct = Number(r?.correctFlags) || 0;
     const next = {
@@ -1576,18 +1773,29 @@ function App() {
       date: toDateString(),
     };
     upsertLocalLeaderboard(row);
-    postLeaderboardNoCors(row);
-
     setResults(r);
+    setSubmissionStatus('syncing');
     setScreen('summary');
+
+    let synced = await submitLeaderboardRow(row);
+    if(level === 'high') {
+      const pendingLeft = await flushPendingSubmissions();
+      synced = synced || pendingLeft === 0;
+    }
+    setSubmissionStatus(synced ? 'success' : 'failed');
   };
-  const handleRetry = () => { setScreen('levels'); };
+  const handleRetry = () => {
+    setLevel(null);
+    setResults(null);
+    setSubmissionStatus(null);
+    setScreen('start');
+  };
   const handleLeaderboard = () => setScreen('leaderboard');
-  const handleBack = () => { setScreen('levels'); };
+  const handleBack = () => { setScreen(player?.email ? 'levels' : 'start'); };
 
   return (
     <>
-      {screen === 'start' && <StartScreen onStart={handleStart} />}
+      {screen === 'start' && <StartScreen onStart={handleStart} onViewLeaderboard={handleViewLeaderboardFromStart} />}
       {screen === 'levels' && <LevelSelect player={player} onSelectLevel={handleSelectLevel} datasets={datasets} unlockState={unlockState} />}
       {screen === 'game' && level && (
         <GameSession
@@ -1604,6 +1812,7 @@ function App() {
           level={level}
           onRetry={handleRetry}
           onLeaderboard={handleLeaderboard}
+          submissionStatus={submissionStatus}
         />
       )}
       {screen === 'leaderboard' && (
